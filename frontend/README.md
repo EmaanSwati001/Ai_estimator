@@ -1,16 +1,54 @@
-# React + Vite
+# AI Project Estimator - Frontend Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This directory contains the React frontend client for the **AI Project Estimator & Proposal Generator** application.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Frontend Tech Stack & Justifications
 
-## React Compiler
+*   **Vite + React**: Chosen for lightweight scaffolding, fast build times, and high developer efficiency.
+*   **Tailwind CSS v4**: Utility-first styles for maximum visual polish (gradients, dark themes, and glassmorphism) with zero runtime bundle overhead.
+*   **Framer Motion**: Implements smooth transition animations between form steps, loading screen messages, and dynamic dashboard card effects.
+*   **Lucide React**: Vector icons that align with clean SaaS design interfaces.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 📂 Frontend Directory Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```text
+frontend/
+├── src/
+│   ├── main.jsx             # React DOM entrypoint
+│   ├── index.css            # Tailwind v4 import directives
+│   ├── App.jsx              # View controller state manager (landing, form, dashboard)
+│   ├── services/
+│   │   └── api.js           # API fetches to backend uvicorn endpoints
+│   └── components/
+│       ├── LandingPage.jsx  # Hero landing page
+│       ├── Questionnaire.jsx# Guided 5-step questionnaire
+│       ├── LoadingScreen.jsx# Analyst progress feedback
+│       └── Dashboard.jsx    # Calculations tables, SVG charts, and PDF download triggers
+├── index.html
+├── vite.config.js
+└── package.json
+```
+
+---
+
+## 🚀 Setup & Launch
+
+1.  Navigate into this folder:
+    ```bash
+    cd frontend
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Start the Vite local development server:
+    ```bash
+    npm run dev -- --port 5173
+    ```
+4.  Open your browser to [http://localhost:5173](http://localhost:5173).
+
+*Note: Ensure the backend FastAPI server is also running on port `8000` to allow the questionnaire submission to complete.*
