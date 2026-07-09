@@ -39,6 +39,8 @@ class AIResponse(Base):
     summary = Column(Text, nullable=False)      # Executive summary
     tech_stack = Column(JSON, nullable=False)   # List/JSON of tech recommendation categories
     risks = Column(JSON, nullable=False)        # List/JSON of risks & mitigations
+    roadmap = Column(JSON, nullable=True)       # Dynamic project roadmap phases
+    sprint_plan = Column(JSON, nullable=True)   # Agile sprint plans
 
     project = relationship("Project", back_populates="ai_response")
 

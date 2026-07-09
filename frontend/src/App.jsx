@@ -3,12 +3,15 @@ import LandingPage from "./components/LandingPage";
 import Questionnaire from "./components/Questionnaire";
 import LoadingScreen from "./components/LoadingScreen";
 import Dashboard from "./components/Dashboard";
+import AdminLogin from "./components/AdminLogin";
+import AdminDashboard from "./components/AdminDashboard";
 import { createEstimate } from "./services/api";
 
 export default function App() {
   const [view, setView] = useState("landing");
   const [proposal, setProposal] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [adminAuthed, setAdminAuthed] = useState(false);
 
   const handleSubmitQuestionnaire = async (formData) => {
     setView("loading");
@@ -33,25 +36,29 @@ export default function App() {
 
   return (
     <div className="bg-slate-950 min-h-screen text-slate-100 selection:bg-indigo-500/30">
+      {/* Backend Error Toast */}
       {errorMsg && view === "questionnaire" && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-full px-4">
           <div className="bg-red-950/90 border border-red-500/40 text-red-300 rounded-xl p-4 shadow-xl text-center text-sm backdrop-blur">
             <p className="font-semibold">Backend Connection Issue</p>
             <p className="text-xs text-red-400 mt-1">{errorMsg}</p>
-            <button
-              onClick={() => setErrorMsg("")}
-              className="mt-2 text-xs text-slate-300 hover:text-white underline cursor-pointer"
-            >
+            <button onClick={() => setErrorMsg("")}
+              className="mt-2 text-xs text-slate-300 hover:text-white underline cursor-pointer">
               Dismiss
             </button>
           </div>
         </div>
       )}
 
+      {/* Landing Page */}
       {view === "landing" && (
-        <LandingPage onStart={() => setView("questionnaire")} />
+        <LandingPage
+          onStart={() => setView("questionnaire")}
+          onAdminClick={() => setView("admin_login")}
+        />
       )}
 
+      {/* Questionnaire */}
       {view === "questionnaire" && (
         <Questionnaire
           onSubmit={handleSubmitQuestionnaire}
@@ -59,6 +66,7 @@ export default function App() {
         />
       )}
 
+      {/* Loading/Processing Screen */}
       {view === "loading" && (
         <LoadingScreen
           onFinished={() => setView("dashboard")}
@@ -66,10 +74,31 @@ export default function App() {
         />
       )}
 
+      {/* Proposal Dashboard */}
       {view === "dashboard" && proposal && (
         <Dashboard
           proposal={proposal}
           onReset={handleReset}
+        />
+      )}
+
+      {/* Admin Login */}
+      {view === "admin_login" && (
+        <AdminLogin
+          onLogin={() => {
+            setAdminAuthed(true);
+            setView("admin_dashboard");
+          }}
+        />
+      )}
+
+      {/* Admin Dashboard */}
+      {view === "admin_dashboard" && adminAuthed && (
+        <AdminDashboard
+          onLogout={() => {
+            setAdminAuthed(false);
+            setView("landing");
+          }}
         />
       )}
     </div>

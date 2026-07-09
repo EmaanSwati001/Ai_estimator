@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowRight, Sparkles, Shield, DollarSign, Clock, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function LandingPage({ onStart }) {
+export default function LandingPage({ onStart, onAdminClick }) {
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden flex flex-col justify-between">
       {/* Background Gradients */}
@@ -20,8 +20,14 @@ export default function LandingPage({ onStart }) {
               EstimatorAI
             </span>
           </div>
-          <div className="text-sm text-slate-400">
-            Automated Discovery Phase
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-slate-500 hidden sm:block">Automated Discovery Phase</span>
+            {onAdminClick && (
+              <button onClick={onAdminClick}
+                className="text-xs font-semibold text-slate-400 hover:text-indigo-300 border border-slate-800 hover:border-indigo-700 px-3 py-1.5 rounded-lg transition-all cursor-pointer">
+                Admin Portal
+              </button>
+            )}
           </div>
         </div>
       </header>

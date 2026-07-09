@@ -16,7 +16,23 @@ FEATURE_HOURS = {
     "ai": 80,            # AI & Smart Recommendations
     "admin": 40,         # Admin Panel / CMS
     "multilang": 20,     # Multi-language Support
-    "thirdparty": 30     # Third-party API Integrations
+    "thirdparty": 30,    # Third-party API Integrations
+    # Recommended Features Mapping
+    "inventory": 40,     # Inventory Management
+    "tracking": 35,      # Order Tracking
+    "reviews": 20,       # Reviews & Ratings
+    "wishlist": 15,      # Wishlist
+    "coupons": 20,       # Coupon System
+    "scheduling": 40,    # Appointment Scheduling
+    "telehealth": 60,    # Video Consultation
+    "healthrecords": 50, # Secure EHR Data
+    "quiz": 30,          # Course Quizzes
+    "streaming": 50,     # Video Streaming
+    "analytics": 40,     # Advanced Analytics Dashboard
+    "moderation": 35,    # Content Moderation
+    "security": 50,      # Compliance Audits
+    "collaboration": 45, # Collaboration Tools
+    "export": 20         # Data Export CSV/PDF
 }
 
 # Industry multipliers
