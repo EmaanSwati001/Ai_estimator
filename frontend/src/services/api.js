@@ -64,3 +64,17 @@ export async function getRecommendations(industry, features) {
 export function getPdfUrl(projectId) {
   return `${API_BASE_URL}/api/estimate/${projectId}/pdf`;
 }
+
+// Submit conversational requirements messages to get next question or final scope
+export async function submitChatDiscovery(messages) {
+  const response = await fetch(`${API_BASE_URL}/api/chat-discovery`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to submit chat discovery.");
+  }
+  return response.json();
+}

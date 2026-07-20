@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import {
-  Download, RefreshCw, Clock, DollarSign, Users, Calendar,
-  AlertTriangle, CheckSquare, Server, Cpu, Database, Globe,
-  CloudLightning, ChevronRight, CheckCircle2, Circle, Map, Zap
+import { 
+  Download, RefreshCw, Clock, DollarSign, Users, Calendar, 
+  AlertTriangle, CheckSquare, Server, Cpu, Database, Globe, 
+  CloudLightning, ChevronRight, CheckCircle2, Circle, Map, Zap, 
+  ShieldCheck, Eye, Layers, Compass
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { getPdfUrl } from "../services/api";
 
-// Feature display metadata
 const FEATURE_META = {
   auth: { name: "User Auth & Profiles", desc: "Secure signup, login credentials, and user profiles." },
   dashboard: { name: "Dashboard & Analytics", desc: "Interactive data summaries, graphs, and metric lists." },
@@ -38,472 +38,614 @@ const FEATURE_META = {
   export: { name: "Data Export", desc: "Generate PDF/CSV reports and summaries." },
 };
 
-// ─── Architecture Visualizer Component ───────────────────────────────────────
-function ArchNode({ label, icon: Icon, color = "indigo", sub }) {
-  const colorMap = {
-    indigo: "border-indigo-500/40 bg-indigo-950/30 text-indigo-300",
-    purple: "border-purple-500/40 bg-purple-950/30 text-purple-300",
-    slate: "border-slate-600/60 bg-slate-900/60 text-slate-300",
-    emerald: "border-emerald-500/40 bg-emerald-950/30 text-emerald-300",
-    amber: "border-amber-500/40 bg-amber-950/30 text-amber-300",
-    red: "border-red-500/40 bg-red-950/30 text-red-300",
-  };
-  return (
-    <div className={`flex flex-col items-center px-5 py-3 rounded-2xl border backdrop-blur-sm ${colorMap[color]} min-w-[130px] text-center`}>
-      {Icon && <Icon className="w-4 h-4 mb-1 opacity-80" />}
-      <span className="text-xs font-bold">{label}</span>
-      {sub && <span className="text-[10px] opacity-60 mt-0.5">{sub}</span>}
-    </div>
-  );
-}
-
-function ArchArrow() {
-  return (
-    <div className="flex flex-col items-center my-1">
-      <div className="w-px h-4 bg-gradient-to-b from-slate-600 to-slate-700" />
-      <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-slate-600" />
-    </div>
-  );
-}
-
-function ArchRow({ children }) {
-  return (
-    <div className="flex items-center justify-center gap-4 flex-wrap">
-      {React.Children.map(children, (child, i) => (
-        <React.Fragment key={i}>
-          {i > 0 && <div className="w-8 h-px bg-gradient-to-r from-slate-700 to-slate-600" />}
-          {child}
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
-
-function ArchitectureVisualizer({ features, platforms, industry }) {
-  const feat = features.map(f => f.toLowerCase());
-  const hasPayments = feat.includes("payments") || feat.includes("coupons");
-  const hasNotifs = feat.includes("notifications");
-  const hasAI = feat.includes("ai") || feat.includes("analytics");
-  const hasMobile = platforms.map(p => p.toLowerCase()).includes("mobile");
-  const hasChat = feat.includes("chat");
-  const hasStorage = feat.includes("upload") || feat.includes("healthrecords");
-
-  return (
-    <div className="flex flex-col items-center gap-0 py-4 overflow-x-auto">
-      {/* User Layer */}
-      <ArchRow>
-        <ArchNode label="End Users" icon={Users} color="slate" sub={hasMobile ? "Web + Mobile" : "Web Browser"} />
-      </ArchRow>
-      <ArchArrow />
-
-      {/* Frontend */}
-      <ArchRow>
-        <ArchNode label="React Frontend" icon={Globe} color="indigo" sub="Vite + Tailwind CSS" />
-        {hasMobile && <ArchNode label="React Native" icon={Globe} color="indigo" sub="Mobile App" />}
-      </ArchRow>
-      <ArchArrow />
-
-      {/* API Gateway */}
-      <ArchRow>
-        <ArchNode label="FastAPI Backend" icon={Server} color="purple" sub="REST + CORS" />
-      </ArchRow>
-      <ArchArrow />
-
-      {/* Auth + Core */}
-      <ArchRow>
-        <ArchNode label="Auth Service" icon={CheckCircle2} color="slate" sub="JWT / OAuth2" />
-        <ArchNode label="Core API" icon={Zap} color="slate" sub="Business Logic" />
-        {hasAI && <ArchNode label="AI Service" icon={Cpu} color="purple" sub="ML / LLM Engine" />}
-      </ArchRow>
-      <ArchArrow />
-
-      {/* Database */}
-      <ArchRow>
-        <ArchNode label="Database" icon={Database} color="emerald" sub={industry === "healthcare" || industry === "finance" ? "PostgreSQL (Encrypted)" : "PostgreSQL / SQLite"} />
-        {hasStorage && <ArchNode label="File Storage" icon={CloudLightning} color="emerald" sub="AWS S3 / Cloud" />}
-      </ArchRow>
-
-      {/* External Services row */}
-      {(hasPayments || hasNotifs || hasChat) && (
-        <>
-          <ArchArrow />
-          <ArchRow>
-            {hasPayments && <ArchNode label="Payment Gateway" icon={DollarSign} color="amber" sub="Stripe API" />}
-            {hasNotifs && <ArchNode label="Notification Service" icon={AlertTriangle} color="amber" sub="Firebase / Twilio" />}
-            {hasChat && <ArchNode label="WebSocket Server" icon={Zap} color="amber" sub="Real-time Chat" />}
-          </ArchRow>
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── Roadmap Timeline Component ───────────────────────────────────────────────
-function RoadmapTimeline({ roadmap }) {
-  return (
-    <div className="relative">
-      {/* Vertical line */}
-      <div className="absolute left-5 top-5 bottom-5 w-px bg-gradient-to-b from-indigo-500/50 via-purple-500/30 to-transparent" />
-      <div className="space-y-6">
-        {roadmap.map((phase, idx) => (
-          <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.15 }}
-            className="flex gap-6 pl-2">
-            {/* Node */}
-            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-black shadow-lg shadow-indigo-500/20 z-10">
-              {idx + 1}
-            </div>
-            {/* Card */}
-            <div className="flex-1 bg-slate-900/40 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                  <h4 className="font-bold text-sm text-slate-200">{phase.title}</h4>
-                  <div className="mt-3 space-y-1.5">
-                    {phase.features.map((f, fi) => (
-                      <div key={fi} className="flex items-center gap-2 text-xs text-slate-400">
-                        <CheckSquare className="w-3 h-3 text-indigo-400 flex-shrink-0" />
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <span className="text-xs font-bold bg-indigo-950/50 border border-indigo-500/30 text-indigo-300 px-3 py-1.5 rounded-full whitespace-nowrap flex-shrink-0">
-                  <Clock className="w-3 h-3 inline mr-1" />
-                  {phase.duration}
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Sprint Planner Component ─────────────────────────────────────────────────
-function SprintCard({ sprint, idx }) {
-  const progress = sprint.progress ?? 0;
-  return (
-    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
-      className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition-all">
-      {/* Sprint Header */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="font-black text-sm text-slate-200">{sprint.title}</span>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-950/40 border border-indigo-500/20 px-2.5 py-1 rounded-full">
-          {sprint.effort}
-        </span>
-      </div>
-      {/* Progress Bar */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Progress</span>
-          <span className="text-[10px] font-bold text-slate-400">{progress}%</span>
-        </div>
-        <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all"
-            style={{ width: `${progress}%` }} />
-        </div>
-      </div>
-      {/* Objectives */}
-      <p className="text-xs text-slate-400 leading-relaxed mb-4">{sprint.objectives}</p>
-      {/* Deliverables */}
-      <div className="space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Deliverables</p>
-        {sprint.deliverables.map((d, di) => (
-          <div key={di} className="flex items-start gap-2 text-xs text-slate-400">
-            <Circle className="w-2.5 h-2.5 text-indigo-500 mt-0.5 flex-shrink-0" />
-            <span>{d}</span>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function Dashboard({ proposal, onReset }) {
   const { project_id, project_name, client_name, email, industry, platforms, features, estimate, ai_response } = proposal;
   const [activeSection, setActiveSection] = useState("overview");
+  const [downloading, setDownloading] = useState(false);
 
-  const handleDownloadPdf = () => window.open(getPdfUrl(project_id), "_blank");
+  const handleDownloadPdf = () => {
+    setDownloading(true);
+    window.open(getPdfUrl(project_id), "_blank");
+    setTimeout(() => setDownloading(false), 2000);
+  };
 
-  const tasks = [
-    { name: "Frontend Development", pct: 40, color: "bg-indigo-500" },
-    { name: "Backend Engineering", pct: 35, color: "bg-purple-500" },
-    { name: "Quality Assurance", pct: 15, color: "bg-pink-500" },
-    { name: "Project Management", pct: 10, color: "bg-amber-500" },
-  ];
+  // Complexity calculation
+  const complexityScore = Math.min(100, Math.max(15, Math.round((estimate.hours / 600) * 100)));
+  const getComplexityLabel = (score) => {
+    if (score < 35) return { text: "Low Complexity", color: "text-emerald-400 border-emerald-500/20 bg-emerald-950/20" };
+    if (score < 70) return { text: "Moderate Complexity", color: "text-amber-400 border-amber-500/20 bg-amber-950/20" };
+    return { text: "High Complexity", color: "text-red-400 border-red-500/20 bg-red-950/20" };
+  };
+  const complexity = getComplexityLabel(complexityScore);
+
+  // Proportional breakdown calculations
+  const breakdown = estimate.breakdown || {
+    design: estimate.cost * 0.15,
+    frontend: estimate.cost * 0.35,
+    backend: estimate.cost * 0.30,
+    qa: estimate.cost * 0.12,
+    pm: estimate.cost * 0.08
+  };
+
+  // Determine dynamic APIs to recommend
+  const recommendApis = [];
+  const featLower = features.map(f => f.toLowerCase());
+  if (featLower.includes("payments") || featLower.includes("coupons")) {
+    recommendApis.push({ name: "Stripe Billing API", desc: "For secure tokenized card transactions and subscriptions checkout." });
+  }
+  if (featLower.includes("auth") || featLower.includes("social")) {
+    recommendApis.push({ name: "Auth0 / JSON Web Token", desc: "Standard identity gateway, OAuth single-sign-on support." });
+  }
+  if (featLower.includes("upload") || featLower.includes("healthrecords")) {
+    recommendApis.push({ name: "AWS S3 / Cloudflare CDN", desc: "Asset bucket storage and lightning fast global caching." });
+  }
+  if (featLower.includes("chat") || featLower.includes("notifications") || featLower.includes("telehealth")) {
+    recommendApis.push({ name: "Twilio & Firebase FCM", desc: "Pushes push updates and handles secure RTC videoConsult channels." });
+  }
+  if (featLower.includes("ai")) {
+    recommendApis.push({ name: "OpenAI API (gpt-4o-mini)", desc: "For dynamic completions, smart parsing, and recommendations." });
+  }
+  if (featLower.includes("thirdparty")) {
+    recommendApis.push({ name: "Plaid API Integration", desc: "Secure open banking sync to retrieve client transaction statements." });
+  }
+  if (recommendApis.length === 0) {
+    recommendApis.push({ name: "SendGrid Email Gateway", desc: "Standard SMTP transactional mailer logs." });
+    recommendApis.push({ name: "JWT Encryption Suite", desc: "Local cryptographic signature token validations." });
+  }
 
   const navItems = [
-    { id: "overview", label: "Overview" },
-    { id: "architecture", label: "Architecture" },
-    { id: "roadmap", label: "Roadmap" },
-    { id: "sprints", label: "Sprint Plan" },
+    { id: "overview", label: "Project Summary" },
+    { id: "architecture", label: "Architecture Flow" },
+    { id: "roadmap", label: "Roadmap Timeline" },
+    { id: "sprints", label: "Sprint Planner" },
+    { id: "budget", label: "Budget Allocation" }
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden pb-20">
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/5 blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-x-hidden pb-20 selection:bg-indigo-500/30">
+      
+      {/* Background Gradients */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/5 blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/5 blur-[130px] pointer-events-none" />
 
       {/* Header */}
       <header className="border-b border-slate-900 bg-slate-950/40 py-4 px-6 sticky top-0 z-50 backdrop-blur-md">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center">
-              <span className="font-bold text-white text-sm">E</span>
+              <Layers className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-indigo-200 to-purple-200 bg-clip-text text-transparent">EstimatorAI</span>
+            <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-200 to-purple-200 bg-clip-text text-transparent">ProjectPilot AI</span>
           </div>
           <div className="flex items-center space-x-3">
-            <button onClick={handleDownloadPdf}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow cursor-pointer">
-              <Download className="w-3.5 h-3.5" /><span>Download PDF</span>
+            <button 
+              onClick={handleDownloadPdf}
+              disabled={downloading}
+              className="bg-indigo-650 hover:bg-indigo-600 disabled:opacity-50 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-1.5 transition-all shadow-md shadow-indigo-500/10 cursor-pointer"
+            >
+              {downloading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              <span>Download Proposal PDF</span>
             </button>
-            <button onClick={onReset}
-              className="bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1 transition-all cursor-pointer">
-              <RefreshCw className="w-3 h-3" /><span>New Estimate</span>
+            <button 
+              onClick={onReset}
+              className="bg-slate-900 border border-slate-850 hover:border-slate-750 text-slate-350 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center space-x-1 transition-all cursor-pointer"
+            >
+              <RefreshCw className="w-3 h-3" />
+              <span>New Scoping</span>
             </button>
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-10 space-y-8">
-        {/* Project Header */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-900 pb-8">
+        
+        {/* Project Header Banner */}
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-900 pb-8"
+        >
           <div>
-            <span className="text-xs uppercase font-bold text-indigo-400 tracking-wider">Project Proposal Ready</span>
-            <h1 className="text-3xl font-extrabold tracking-tight mt-1">{project_name}</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Prepared for <span className="font-semibold text-slate-300">{client_name}</span> ({email}) &bull; <span className="capitalize text-slate-300">{industry}</span>
+            <span className="text-[10px] uppercase font-bold text-indigo-400 tracking-widest">Discovery Proposal Compiled</span>
+            <h1 className="text-3xl font-black text-slate-100 tracking-tight mt-1">{project_name}</h1>
+            <p className="text-slate-400 text-xs mt-1">
+              Prepared for <span className="font-bold text-slate-300">{client_name}</span> ({email}) &bull; <span className="capitalize text-slate-350">{industry} Sector</span>
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          
+          <div className="flex flex-wrap gap-2.5">
             {platforms.map(p => (
-              <span key={p} className="text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-300 px-3 py-1 rounded-full uppercase tracking-wider">{p}</span>
+              <span key={p} className="text-[9.5px] font-bold bg-slate-900/60 border border-slate-850 text-slate-350 px-3.5 py-1.5 rounded-full uppercase tracking-wider">{p}</span>
             ))}
           </div>
         </motion.div>
 
-        {/* Section Navigation Tabs */}
-        <div className="flex gap-1 bg-slate-900/60 border border-slate-800 rounded-xl p-1 w-fit">
+        {/* Modular Metrics Row */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          
+          {[
+            { label: "Estimated Cost", val: `$${estimate.cost.toLocaleString()}`, icon: DollarSign, color: "text-indigo-400 bg-indigo-500/5 border-indigo-500/10" },
+            { label: "Total Effort", val: `${estimate.hours} Hours`, icon: Clock, color: "text-purple-400 bg-purple-500/5 border-purple-500/10" },
+            { label: "Target Duration", val: estimate.timeline, icon: Calendar, color: "text-pink-400 bg-pink-500/5 border-pink-500/10" },
+            { label: "Team Size", val: `${estimate.team.size} Resources`, icon: Users, color: "text-emerald-400 bg-emerald-500/5 border-emerald-500/10" },
+          ].map((item, idx) => (
+            <motion.div 
+              key={idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.08 }}
+              className={`p-5 rounded-2xl border flex flex-col justify-between h-[120px] bg-slate-900/25 ${item.color}`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">{item.label}</span>
+                <item.icon className="w-4 h-4 opacity-70" />
+              </div>
+              <h3 className="text-xl font-black text-slate-100 tracking-tight">{item.val}</h3>
+            </motion.div>
+          ))}
+
+          {/* Complexity Score Card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.32 }}
+            className="p-5 rounded-2xl border border-slate-850/80 bg-slate-900/25 flex flex-col justify-between h-[120px] col-span-2 md:col-span-1"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Complexity Score</span>
+              <span className={`text-[8.5px] font-bold px-2 py-0.5 rounded border ${complexity.color}`}>
+                {complexity.text.split(" ")[0]}
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-end justify-between">
+                <span className="text-xl font-black text-slate-100">{complexityScore}%</span>
+              </div>
+              <div className="w-full bg-slate-850 h-1.5 rounded-full overflow-hidden p-px">
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full" style={{ width: `${complexityScore}%` }} />
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+
+        {/* Tab Navigation Menu */}
+        <div className="flex flex-wrap gap-1 bg-slate-900/50 border border-slate-900 rounded-2xl p-1.5 w-fit">
           {navItems.map(item => (
-            <button key={item.id} onClick={() => setActiveSection(item.id)}
-              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${activeSection === item.id ? "bg-indigo-600 text-white shadow" : "text-slate-400 hover:text-slate-200"}`}>
+            <button 
+              key={item.id} 
+              onClick={() => setActiveSection(item.id)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeSection === item.id ? "bg-indigo-650 text-white shadow" : "text-slate-450 hover:text-slate-200"}`}
+            >
               {item.label}
             </button>
           ))}
         </div>
 
-        {/* ── OVERVIEW TAB ── */}
+        {/* ── SECTION 1: OVERVIEW & SCOPE ── */}
         {activeSection === "overview" && (
-          <div className="space-y-8">
-            {/* Metric Cards */}
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {[
-                { label: "Est. Effort", value: `${estimate.hours} hrs`, icon: Clock, color: "text-indigo-400 bg-indigo-500/10" },
-                { label: "Budget Estimate", value: `$${estimate.cost.toLocaleString()}`, icon: DollarSign, color: "text-purple-400 bg-purple-500/10" },
-                { label: "Timeline", value: estimate.timeline, icon: Calendar, color: "text-pink-400 bg-pink-500/10" },
-                { label: "Team Size", value: `${estimate.team.size} members`, icon: Users, color: "text-amber-400 bg-amber-500/10" },
-              ].map(({ label, value, icon: Icon, color }) => (
-                <div key={label} className="bg-slate-900/30 border border-slate-900 p-6 rounded-2xl flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{label}</p>
-                    <h3 className="text-xl font-black text-slate-100 mt-0.5">{value}</h3>
-                  </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          >
+            {/* Left Col: Project Summary & APIs */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              {/* Executive Summary Card */}
+              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4">
+                <h3 className="font-extrabold text-base text-slate-250 border-b border-slate-900 pb-3 flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-indigo-400" />
+                  Executive Summary & Scope Description
+                </h3>
+                <p className="text-slate-350 text-xs leading-relaxed">{ai_response.summary}</p>
+                <div className="bg-slate-950/40 border border-slate-900 p-4.5 rounded-2xl space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Brief Objectives Statement</span>
+                  <p className="text-slate-400 text-xs leading-normal">
+                    Develop a robust core matching the {industry} sector standards. Mapped to client-selected specifications, our technical team recomends deploying containerized configurations on AWS VPC infrastructure, maintaining database integrations, and scaling in modular sprint cycles.
+                  </p>
                 </div>
-              ))}
-            </motion.div>
+              </div>
 
-            {/* Executive Summary + Effort Chart */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                className="lg:col-span-2 bg-slate-900/20 border border-slate-900 p-8 rounded-3xl space-y-4">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">Executive Summary</h3>
-                <p className="text-slate-400 text-sm leading-relaxed text-justify">{ai_response.summary}</p>
-                <div className="pt-2">
-                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Team Roles</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {estimate.team.roles.map(role => (
-                      <span key={role} className="text-xs bg-indigo-950/40 border border-indigo-900/50 text-indigo-300 px-3 py-1 rounded-md">{role}</span>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                className="bg-slate-900/20 border border-slate-900 p-8 rounded-3xl flex flex-col justify-between">
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">Effort Distribution</h3>
-                  <p className="text-xs text-slate-400 mt-1">Simulated allocation across roles.</p>
-                </div>
-                <div className="my-5">
-                  <div className="w-full h-4 rounded-full overflow-hidden flex bg-slate-800">
-                    {tasks.map(t => <div key={t.name} className={`${t.color} h-full`} style={{ width: `${t.pct}%` }} />)}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {tasks.map(t => (
-                    <div key={t.name} className="flex items-center justify-between text-xs">
-                      <div className="flex items-center space-x-2 text-slate-400">
-                        <div className={`w-2.5 h-2.5 rounded-full ${t.color}`} />
-                        <span>{t.name}</span>
+              {/* Dynamic Effort Chart & Features list */}
+              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Effort Distribution Bar/Pie SVG Chart */}
+                <div className="space-y-4 text-left">
+                  <h4 className="font-extrabold text-sm text-slate-200">Effort Hour Distribution</h4>
+                  
+                  {/* SVG Chart ring gauge */}
+                  <div className="flex items-center space-x-6">
+                    <div className="relative w-28 h-28 flex items-center justify-center">
+                      <svg width="100%" height="100%" viewBox="0 0 42 42" className="transform -rotate-90">
+                        {/* Circle background */}
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#1e293b" strokeWidth="3" />
+                        
+                        {/* Ring segments: Design (15%), Frontend (35%), Backend (30%), QA (12%), PM (8%) */}
+                        {/* Design */}
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#4f46e5" strokeWidth="4" strokeDasharray="15 85" strokeDashoffset="0" />
+                        {/* Frontend */}
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#7c3aed" strokeWidth="4" strokeDasharray="35 65" strokeDashoffset="-15" />
+                        {/* Backend */}
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#ec4899" strokeWidth="4" strokeDasharray="30 70" strokeDashoffset="-50" />
+                        {/* QA */}
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#10b981" strokeWidth="4" strokeDasharray="12 88" strokeDashoffset="-80" />
+                        {/* PM */}
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#f59e0b" strokeWidth="4" strokeDasharray="8 92" strokeDashoffset="-92" />
+                      </svg>
+                      <div className="absolute flex flex-col items-center justify-center">
+                        <span className="text-[10px] uppercase font-bold text-slate-500 font-mono">Rate</span>
+                        <span className="text-xs font-black text-slate-200 font-mono">$100/h</span>
                       </div>
-                      <span className="font-semibold text-slate-300">{t.pct}%</span>
+                    </div>
+
+                    {/* Chart Legends */}
+                    <div className="space-y-1.5 flex-1">
+                      {[
+                        { name: "Frontend", color: "bg-purple-500", pct: "35%" },
+                        { name: "Backend", color: "bg-pink-500", pct: "30%" },
+                        { name: "UI/UX Design", color: "bg-indigo-500", pct: "15%" },
+                        { name: "Quality Assurance", color: "bg-emerald-500", pct: "12%" },
+                        { name: "Project Management", color: "bg-amber-500", pct: "8%" },
+                      ].map((lg, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-[10px]">
+                          <div className="flex items-center space-x-1.5">
+                            <span className={`w-2 h-2 rounded-sm ${lg.color}`} />
+                            <span className="text-slate-400">{lg.name}</span>
+                          </div>
+                          <span className="font-bold text-slate-200">{lg.pct}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scope features list */}
+                <div className="space-y-3">
+                  <h4 className="font-extrabold text-sm text-slate-200">Core Scope Modules</h4>
+                  <div className="grid grid-cols-1 gap-2 max-h-[160px] overflow-y-auto pr-1">
+                    {features.map((f) => {
+                      const meta = FEATURE_META[f.toLowerCase()] || { name: f.replace(/_/g, " ").title(), desc: "Custom business scope integration." };
+                      return (
+                        <div key={f} className="p-2.5 bg-slate-950/40 border border-slate-900 rounded-xl">
+                          <h5 className="text-[10.5px] font-bold text-slate-350 capitalize">{meta.name}</h5>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Right Col: APIs & Recommendations */}
+            <div className="lg:col-span-1 space-y-6">
+              
+              {/* Dynamic APIs */}
+              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4">
+                <h4 className="font-extrabold text-sm text-slate-200 flex items-center gap-1.5">
+                  <Zap className="w-4.5 h-4.5 text-indigo-400" />
+                  Recommended APIs
+                </h4>
+                <div className="space-y-3">
+                  {recommendApis.map((api, idx) => (
+                    <div key={idx} className="p-3 bg-slate-950/40 border border-slate-900 rounded-xl space-y-1">
+                      <h5 className="text-xs font-bold text-slate-250 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" />
+                        {api.name}
+                      </h5>
+                      <p className="text-[10px] text-slate-400 leading-normal">{api.desc}</p>
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
+
+              {/* AI Features values check */}
+              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-3.5">
+                <h4 className="font-extrabold text-sm text-slate-200 flex items-center gap-1.5">
+                  <Cpu className="w-4.5 h-4.5 text-purple-400" />
+                  AI Architect Guidelines
+                </h4>
+                <p className="text-[10.5px] text-slate-400 leading-relaxed">
+                  Compliance validation and integrations have been mapped dynamically to evaluate technical dependencies. Staging runs can execute SQLite schemas locally before production postgres migration runs.
+                </p>
+              </div>
+
             </div>
+          </motion.div>
+        )}
 
-            {/* Features */}
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-              className="bg-slate-900/20 border border-slate-900 p-8 rounded-3xl space-y-5">
-              <div className="border-b border-slate-900 pb-4">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">Scope & Features</h3>
-                <p className="text-xs text-slate-400 mt-1">All features included in the project scope.</p>
+        {/* ── SECTION 2: ARCHITECTURE VISUALIZER ── */}
+        {activeSection === "architecture" && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          >
+            
+            {/* Architectural visual flowchart */}
+            <div className="lg:col-span-2 bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm text-center space-y-8">
+              
+              <div className="space-y-1.5 text-left">
+                <h3 className="font-extrabold text-base text-slate-200">System Flow Visualizer</h3>
+                <p className="text-slate-500 text-xs">Horizontal schema representing service layers and requests routing paths.</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {features.map(featKey => {
-                  const meta = FEATURE_META[featKey.toLowerCase()] || {
-                    name: featKey.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
-                    desc: "Custom feature integration."
-                  };
-                  return (
-                    <div key={featKey} className="p-4 rounded-2xl bg-slate-950/40 border border-slate-900 flex items-start space-x-3">
-                      <div className="w-5 h-5 rounded bg-indigo-500/10 flex items-center justify-center text-indigo-400 mt-0.5 flex-shrink-0">
-                        <CheckSquare className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-200">{meta.name}</h4>
-                        <p className="text-xs text-slate-400 mt-1 leading-normal">{meta.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
 
-            {/* Tech Stack */}
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-              className="bg-slate-900/20 border border-slate-900 p-8 rounded-3xl space-y-5">
-              <div className="border-b border-slate-900 pb-4">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">Recommended Architecture Stack</h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {Object.entries(ai_response.tech_stack).map(([layer, rec]) => {
-                  let icon = Cpu;
-                  if (layer.toLowerCase().includes("front")) icon = Globe;
-                  else if (layer.toLowerCase().includes("back")) icon = Server;
-                  else if (layer.toLowerCase().includes("data")) icon = Database;
-                  else if (layer.toLowerCase().includes("host")) icon = CloudLightning;
-                  const Icon = icon;
-                  return (
-                    <div key={layer} className="p-5 rounded-2xl bg-slate-950/40 border border-slate-900 hover:border-slate-800 transition-all space-y-3">
-                      <div className="flex items-center space-x-2 text-indigo-400">
-                        <Icon className="w-5 h-5" />
-                        <span className="text-xs font-bold uppercase tracking-wider text-indigo-300">{layer}</span>
-                      </div>
-                      <p className="text-sm font-semibold text-slate-200 leading-normal">{rec}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
+              {/* SVG-linked Architecture columns flow */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-stretch relative min-h-[220px]">
+                
+                {/* Visual connecting grid guides (hidden on small screen) */}
+                <div className="absolute inset-0 pointer-events-none opacity-30 hidden sm:block">
+                  <svg width="100%" height="100%">
+                    <path d="M 120 110 L 210 110 M 310 110 L 400 110 M 500 110 L 590 110" stroke="#4f46e5" strokeWidth="2" strokeDasharray="4,4" fill="none" />
+                  </svg>
+                </div>
 
-            {/* Risks */}
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-              className="bg-slate-900/20 border border-slate-900 p-8 rounded-3xl space-y-5">
-              <div className="border-b border-slate-900 pb-4">
-                <h3 className="text-lg font-bold text-red-400 flex items-center space-x-2">
-                  <AlertTriangle className="w-5 h-5" /><span>Risk Management</span>
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {ai_response.risks.map((item, idx) => (
-                  <div key={idx} className="p-5 rounded-2xl bg-red-950/5 border border-red-900/20 space-y-3">
-                    <span className="text-[10px] uppercase font-bold bg-red-900/20 text-red-400 px-2 py-0.5 rounded-full">Risk {idx + 1}</span>
-                    <h4 className="font-semibold text-sm text-red-200">{item.risk}</h4>
-                    <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-900">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-300">Mitigation</p>
-                      <p className="text-xs text-slate-300 mt-1 leading-relaxed">{item.mitigation}</p>
+                {[
+                  { layer: "Presentation", title: "Client SPA", sub: "React + Vite SPA", icon: Globe, col: "border-indigo-500/20 bg-indigo-950/20 text-indigo-300" },
+                  { layer: "API Gateway", title: "FastAPI Backend", sub: "Python Async API", icon: Server, col: "border-purple-500/20 bg-purple-950/20 text-purple-300" },
+                  { layer: "Services Logic", title: "Rule Engine + AI", sub: "Analysis / Prompts", icon: Cpu, col: "border-pink-500/20 bg-pink-950/20 text-pink-300" },
+                  { layer: "Data Layer", title: "PostgreSQL DB", sub: "relational database", icon: Database, col: "border-emerald-500/20 bg-emerald-950/20 text-emerald-300" },
+                ].map((node, i) => (
+                  <div 
+                    key={i}
+                    className={`p-5 rounded-2xl border backdrop-blur flex flex-col justify-between items-center text-center shadow shadow-slate-950/40 relative z-10 ${node.col}`}
+                  >
+                    <span className="text-[9px] uppercase font-bold tracking-widest opacity-60 font-mono mb-2">{node.layer}</span>
+                    <node.icon className="w-6 h-6 my-2 opacity-80" />
+                    <div className="space-y-0.5">
+                      <h4 className="font-extrabold text-xs text-slate-100">{node.title}</h4>
+                      <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{node.sub}</p>
                     </div>
                   </div>
                 ))}
+                
               </div>
-            </motion.div>
-
-            {/* Download CTA */}
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-              className="p-8 rounded-3xl bg-gradient-to-r from-indigo-950/30 to-purple-950/30 border border-indigo-500/20 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div>
-                <h3 className="font-bold text-lg text-slate-200">Ready to present this proposal?</h3>
-                <p className="text-slate-400 text-xs mt-1">Download the professionally compiled PDF with cover page, roadmap, and sprint plan.</p>
-              </div>
-              <button onClick={handleDownloadPdf}
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-semibold px-6 py-3 rounded-xl flex items-center space-x-2 shadow-lg transition-all cursor-pointer">
-                <Download className="w-4 h-4" /><span>Download Proposal (PDF)</span>
-              </button>
-            </motion.div>
-          </div>
-        )}
-
-        {/* ── ARCHITECTURE TAB ── */}
-        {activeSection === "architecture" && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-900/20 border border-slate-900 p-8 rounded-3xl space-y-6">
-            <div className="border-b border-slate-900 pb-4">
-              <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">Recommended Architecture</h3>
-              <p className="text-slate-400 text-sm mt-1">Visual system architecture adapts to your selected platforms and features.</p>
+              
             </div>
-            <ArchitectureVisualizer features={features} platforms={platforms} industry={industry} />
+
+            {/* Architecture Stack lists */}
+            <div className="lg:col-span-1 space-y-6">
+              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4">
+                <h3 className="font-extrabold text-sm text-slate-200">Recommended Tech Stack</h3>
+                <div className="space-y-3">
+                  {Object.entries(ai_response.tech_stack).map(([layer, rec]) => (
+                    <div key={layer} className="space-y-1 bg-slate-950/30 border border-slate-900 p-3 rounded-xl">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-indigo-400 font-mono">{layer}</span>
+                      <p className="text-xs text-slate-300 leading-normal font-semibold">{rec}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
           </motion.div>
         )}
 
-        {/* ── ROADMAP TAB ── */}
+        {/* ── SECTION 3: PROJECT ROADMAP ── */}
         {activeSection === "roadmap" && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-900/20 border border-slate-900 p-8 rounded-3xl space-y-6">
-            <div className="border-b border-slate-900 pb-4">
-              <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent flex items-center gap-2">
-                <Map className="w-5 h-5 text-indigo-400" /> Project Roadmap
-              </h3>
-              <p className="text-slate-400 text-sm mt-1">Implementation phases based on project complexity and selected features.</p>
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto space-y-8"
+          >
+            
+            <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm">
+              <div className="space-y-1.5 text-left mb-8">
+                <h3 className="font-extrabold text-base text-slate-200">Implementation Timeline Roadmap</h3>
+                <p className="text-slate-500 text-xs">Standard three-phase visual scope mapping estimated duration benchmarks.</p>
+              </div>
+
+              {/* Vertical timeline map */}
+              <div className="relative pl-6">
+                
+                {/* Vertical visual bar */}
+                <div className="absolute left-6.5 top-6 bottom-6 w-px bg-gradient-to-b from-indigo-500/60 via-purple-500/20 to-transparent" />
+                
+                <div className="space-y-6">
+                  {ai_response.roadmap.map((phase, idx) => (
+                    <div key={idx} className="flex gap-6 relative pl-3">
+                      
+                      {/* Node number */}
+                      <div className="absolute left-[-20px] top-1 w-6 h-6 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-650 flex items-center justify-center text-white text-[10px] font-black z-10 shadow-md">
+                        {idx + 1}
+                      </div>
+
+                      {/* Phase details card */}
+                      <div className="flex-1 bg-slate-950/40 border border-slate-900 hover:border-slate-800 p-5 rounded-2xl transition-all">
+                        <div className="flex items-start justify-between gap-4 flex-wrap">
+                          <div className="space-y-3">
+                            <h4 className="font-extrabold text-sm text-slate-200">{phase.title}</h4>
+                            <div className="space-y-1.5">
+                              {phase.features.map((f, fi) => (
+                                <div key={fi} className="flex items-center gap-2 text-xs text-slate-400">
+                                  <CheckSquare className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                                  <span>{f}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <span className="text-[10px] font-bold bg-indigo-950/50 border border-indigo-500/30 text-indigo-300 px-3 py-1 rounded-full whitespace-nowrap">
+                            ⏱ &nbsp; {phase.duration}
+                          </span>
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+
             </div>
-            {ai_response.roadmap && ai_response.roadmap.length > 0 ? (
-              <RoadmapTimeline roadmap={ai_response.roadmap} />
-            ) : (
-              <p className="text-slate-500 text-sm text-center py-8">Roadmap not available for this estimate.</p>
-            )}
+
           </motion.div>
         )}
 
-        {/* ── SPRINTS TAB ── */}
+        {/* ── SECTION 4: SPRINT PLANNER ── */}
         {activeSection === "sprints" && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-900/20 border border-slate-900 p-8 rounded-3xl space-y-6">
-            <div className="border-b border-slate-900 pb-4">
-              <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent flex items-center gap-2">
-                <Zap className="w-5 h-5 text-indigo-400" /> Agile Sprint Plan
-              </h3>
-              <p className="text-slate-400 text-sm mt-1">Work broken into focused 2-week delivery sprints with objectives and deliverables.</p>
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            
+            <div className="space-y-1">
+              <h3 className="font-extrabold text-lg text-slate-250">Agile Sprint Planner</h3>
+              <p className="text-slate-500 text-xs">Standard developer capacity allocation sprint sprints logs.</p>
             </div>
-            {ai_response.sprint_plan && ai_response.sprint_plan.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {ai_response.sprint_plan.map((sprint, idx) => (
-                  <SprintCard key={idx} sprint={sprint} idx={idx} />
-                ))}
-              </div>
-            ) : (
-              <p className="text-slate-500 text-sm text-center py-8">Sprint plan not available for this estimate.</p>
-            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {ai_response.sprint_plan.map((sprint, idx) => {
+                const progress = sprint.progress ?? 0;
+                return (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4 text-left flex flex-col justify-between"
+                  >
+                    <div className="space-y-3.5">
+                      
+                      <div className="flex items-center justify-between border-b border-slate-950 pb-3">
+                        <span className="font-extrabold text-sm text-slate-200">{sprint.title}</span>
+                        <span className="text-[9px] font-bold text-indigo-300 bg-indigo-950/40 border border-indigo-500/20 px-2 py-0.5 rounded-full font-mono">
+                          {sprint.effort}
+                        </span>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 uppercase">
+                          <span>Sprint Status</span>
+                          <span>{progress}% Complete</span>
+                        </div>
+                        <div className="w-full bg-slate-950 border border-slate-900 h-2 rounded-full overflow-hidden p-0.5">
+                          <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all" style={{ width: `${progress}%` }} />
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
+                        {sprint.objectives}
+                      </p>
+
+                    </div>
+
+                    <div className="space-y-2 pt-4 border-t border-slate-950">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500">Deliverables</span>
+                      {sprint.deliverables.map((del, dIdx) => (
+                        <div key={dIdx} className="flex items-start gap-1.5 text-[11px] text-slate-450 leading-normal">
+                          <Circle className="w-1.5 h-1.5 text-indigo-400 mt-1.5 flex-shrink-0" />
+                          <span>{del}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                  </motion.div>
+                );
+              })}
+            </div>
+
           </motion.div>
         )}
+
+        {/* ── SECTION 5: BUDGET ALLOCATION ── */}
+        {activeSection === "budget" && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto space-y-6"
+          >
+            
+            <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm space-y-6">
+              
+              <div className="space-y-1">
+                <h3 className="font-extrabold text-base text-slate-200">Budget Breakdown</h3>
+                <p className="text-slate-500 text-xs">Cost allocation distribution computed across software engineering phases.</p>
+              </div>
+
+              {/* Budget Table */}
+              <div className="space-y-3">
+                {[
+                  { name: "UI/UX Design Phase", desc: "User wireframes, asset vectors, high-fidelity responsive mockups", cost: breakdown.design, pct: 15, barColor: "bg-indigo-500" },
+                  { name: "Frontend Development", desc: "Responsive Client interface codes, custom dashboard flow", cost: breakdown.frontend, pct: 35, barColor: "bg-purple-500" },
+                  { name: "Backend Engineering", desc: "FastAPI controllers, database schemas, integrations mapping", cost: breakdown.backend, pct: 30, barColor: "bg-pink-500" },
+                  { name: "Quality Assurance", desc: "System responsiveness checks, unit integration test suites logs", cost: breakdown.qa, pct: 12, barColor: "bg-emerald-500" },
+                  { name: "Project Management", desc: "Agile sprints checklists updates, solution review reporting", cost: breakdown.pm, pct: 8, barColor: "bg-amber-500" }
+                ].map((row, i) => (
+                  <div key={i} className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1.5 flex-1 pr-6">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-bold text-slate-200">{row.name}</span>
+                        <span className="text-[8.5px] font-mono text-slate-500">({row.pct}%)</span>
+                      </div>
+                      <p className="text-[10px] text-slate-450 leading-none">{row.desc}</p>
+                      <div className="w-full bg-slate-900 border border-slate-950 h-1.5 rounded-full overflow-hidden">
+                        <div className={`h-full ${row.barColor} rounded-full`} style={{ width: `${row.pct}%` }} />
+                      </div>
+                    </div>
+                    <span className="text-xs font-black text-slate-100 font-mono sm:text-right whitespace-nowrap min-w-[100px]">
+                      ${row.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                ))}
+
+                {/* Total cost final row */}
+                <div className="p-5 bg-indigo-950/25 border border-indigo-900/50 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <h4 className="font-extrabold text-xs text-indigo-300">TOTAL ESTIMATED BUDGET</h4>
+                    <p className="text-[9.5px] text-slate-450 mt-0.5">Computed dynamic proposal pricing, excluding third-party API server hosting expenditures</p>
+                  </div>
+                  <span className="text-base font-black text-indigo-400 font-mono">
+                    ${estimate.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+
+              </div>
+
+            </div>
+
+          </motion.div>
+        )}
+
+        {/* Risks & Mitigations Panel */}
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          whileInView={{ opacity: 1 }} 
+          viewport={{ once: true }}
+          className="bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm space-y-5"
+        >
+          <div className="space-y-1">
+            <h3 className="font-extrabold text-base text-slate-200 flex items-center gap-1.5">
+              <AlertTriangle className="w-5 h-5 text-red-400" />
+              Technical Risk Mitigation Policy
+            </h3>
+            <p className="text-slate-500 text-xs">Identified risk factors and recommended engineering mitigation policies.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {ai_response.risks.map((risk, idx) => (
+              <div key={idx} className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl space-y-2">
+                <span className="text-[9px] uppercase font-bold bg-red-950/30 border border-red-500/20 text-red-450 px-2 py-0.5 rounded-full inline-block font-mono">
+                  Risk Factor {idx + 1}
+                </span>
+                <h4 className="font-extrabold text-xs text-slate-250 leading-relaxed">{risk.risk}</h4>
+                <div className="p-3 bg-slate-900/30 border border-slate-900/60 rounded-xl">
+                  <span className="text-[8.5px] font-bold text-indigo-300 uppercase tracking-widest block mb-1">Mitigation Plan</span>
+                  <p className="text-[10px] text-slate-400 leading-relaxed">{risk.mitigation}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
       </main>
     </div>
   );

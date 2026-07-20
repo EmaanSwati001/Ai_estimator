@@ -129,5 +129,12 @@ def calculate_estimate(
         "team": {
             "size": team_size,
             "roles": team_roles
+        },
+        "breakdown": {
+            "design": float(round(total_cost * 0.15)),
+            "frontend": float(round(total_cost * 0.35)),
+            "backend": float(round(total_cost * 0.30)),
+            "qa": float(round(total_cost * 0.12)),
+            "pm": float(round(total_cost * 0.08))
         }
     }

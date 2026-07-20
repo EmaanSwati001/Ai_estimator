@@ -1,4 +1,4 @@
-# AI Project Estimator - Frontend Client
+# AI Project Estimator - Frontend Client (v2.0)
 
 This directory contains the React frontend client for the **AI Project Estimator & Proposal Generator** application.
 
@@ -20,14 +20,16 @@ frontend/
 ├── src/
 │   ├── main.jsx             # React DOM entrypoint
 │   ├── index.css            # Tailwind v4 import directives
-│   ├── App.jsx              # View controller state manager (landing, form, dashboard)
+│   ├── App.jsx              # View controller state manager (landing, form, dashboard, admin_login, admin_dashboard)
 │   ├── services/
 │   │   └── api.js           # API fetches to backend uvicorn endpoints
 │   └── components/
-│       ├── LandingPage.jsx  # Hero landing page
-│       ├── Questionnaire.jsx# Guided 5-step questionnaire
-│       ├── LoadingScreen.jsx# Analyst progress feedback
-│       └── Dashboard.jsx    # Calculations tables, SVG charts, and PDF download triggers
+│       ├── LandingPage.jsx      # Hero landing page with Client Entry & Admin link
+│       ├── Questionnaire.jsx    # Guided multi-step questionnaire with dynamic AI recommendations
+│       ├── LoadingScreen.jsx    # Analyst progress feedback
+│       ├── Dashboard.jsx        # Scope calculations, SVG charts, roadmaps, agile sprints, and PDF download triggers
+│       ├── AdminLogin.jsx       # Password protection view for admin access
+│       └── AdminDashboard.jsx   # List of all estimates, details view, and record deletion controls
 ├── index.html
 ├── vite.config.js
 └── package.json

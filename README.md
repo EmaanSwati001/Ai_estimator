@@ -1,38 +1,25 @@
-# AI Project Estimator & Proposal Generator
+# AI Project Estimator & Proposal Generator (v2.0)
 
-An intelligent full-stack web application designed to automate the early software discovery and consulting phase. By collecting requirements through an interactive questionnaire, the platform estimates development hours, budgets, and timelines via a strict rule-based engine, generates professional executive summaries and tech recommendations using AI, and compiles downloadable PDF proposals.
+An intelligent, full-stack enterprise automation platform designed to streamline software discovery and consulting. By collecting requirements through a dynamic React-based wizard, the platform calculates development scopes using a deterministic rule engine, generates professional roadmaps, sprint plans, and tech recommendations using AI, and compiles downloadable branded PDF proposals.
 
 ---
 
 ## 🚀 Key Features
 
-*   **Guided Discovery Questionnaire**: A gorgeous, multi-step React form to collect contact info, business domain (industry), platform selections, and modular functional features.
-*   **Deterministic Rule Engine**: Never lets AI calculate pricing or timelines. Applies custom platform (e.g. mobile, multi-platform) and industry-specific (e.g. healthcare regulatory, fintech security) effort multipliers.
-*   **Dual AI Architecture**: Automatically calls the OpenAI API to write tailored executive summaries and tech stacks. If no API key is set, it falls back seamlessly to high-quality, pre-configured industry templates.
-*   **Professional PDF Generator**: Compiles proposals on-the-fly into structured PDF files using ReportLab flowables, tables, and custom hex color branding.
-*   **Interactive SaaS Dashboard**: Displays estimated hours, budgets, timeline ranges, and recommended team sizing alongside a CSS effort-distribution chart, tech stack cards, and risk mitigations.
-*   **SQLite Storage**: Retains all submissions, estimates, AI answers, and PDF document paths locally.
+*   **Guided Discovery Questionnaire**: A multi-step form built with glassmorphic styles and custom input validations to collect project metadata, industry domains, target platforms, and feature scopes.
+*   **Smart AI Feature Recommendation Engine**: Dynamically recommends tailored add-on features (e.g., *telehealth* for healthcare, *compliance audits* for finance, *inventory management* for e-commerce) based on the chosen industry, allowing users to build comprehensive scopes with one click.
+*   **Deterministic Rule Engine**: Enforces strict, predictable pricing and effort calculations using multi-layered criteria (base feature hours, platform multipliers, and industry complexity factors) rather than unpredictable AI math.
+*   **Dual AI Architecture**: Uses the OpenAI API (`gpt-4o-mini`) to write executive summaries, suggest technology stacks, map milestones, and construct sprint checklists. Automatically falls back to high-fidelity, hand-crafted templates if no API key is present.
+*   **Dynamic Roadmaps & Agile Sprint Plans**: Automatically schedules core features across a 3-phase development roadmap and segments objectives, deliverables, and effort across logical 2-week sprints.
+*   **Professional PDF Generator**: Compiles proposals on-the-fly using `ReportLab`, producing beautifully styled documents with cover pages, custom page-breaks, clean table layouts, and headers/footers.
+*   **Admin Dashboard**: A secure management portal where administrators can view all client submissions, review calculated metrics, download generated proposal PDFs, and delete stale database records.
+*   **SQLite Storage**: Retains all client submissions, estimations, and AI responses locally with database cascade deletes.
 
 ---
 
-## 🛠️ Technology Stack & Justification
+## ⚙️ System Architecture Flow
 
-### Frontend Client
-*   **React + Vite**: Provides a blazing fast, hot-reloading development server with standard code-splitting capabilities.
-*   **Tailwind CSS v4**: Utility-first CSS styling enabling high-performance designs, dark themes, and glassmorphism without bloated configuration.
-*   **Framer Motion**: Delivers smooth page transitions, progress bar filling animations, and card hover scaling effects.
-*   **Lucide React**: Clean vector iconography for dashboard categories and controls.
-
-### Backend Services
-*   **FastAPI (Python)**: A high-performance web framework using asynchronous Python logic, automated OpenAPI documentation, and strict CORS handling.
-*   **Pydantic**: Performs run-time validation on client requests (e.g. strict `EmailStr` and JSON array structures).
-*   **SQLAlchemy ORM**: Handles SQL database mappings cleanly through Python classes, preventing raw query injection.
-*   **ReportLab**: Programmatically draws proposal reports to PDF, structuring scope items in tabular formats.
-*   **OpenAI SDK**: Interfaces with standard GPT models (`gpt-4o-mini`) using JSON schema outputs.
-
----
-
-## 📈 System Architecture Flow
+The following sequence diagram outlines the end-to-end data flow when a client requests a proposal:
 
 ```mermaid
 sequenceDiagram
@@ -40,24 +27,41 @@ sequenceDiagram
     participant API as FastAPI Server (Port 8000)
     participant Rules as Rule Engine
     participant AI as AI Integrator (OpenAI / Fallback)
-    participant PDF as ReportLab PDF Compiler
+    participant PDF as PDF Compiler (ReportLab)
     participant DB as SQLite Database
 
     Client->>API: POST /api/estimate (Form data JSON)
     activate API
     API->>DB: Save project contact information
-    API->>Rules: Send features, platforms, and industry
+    API->>Rules: Send selected features, platforms, and industry
     Rules-->>API: Return calculated hours, cost, team, & timeline
-    API->>AI: Send project details and rules outputs
-    AI-->>API: Return Executive Summary, Stack, and Risks JSON
+    API->>AI: Send project details and rule engine outputs
+    AI-->>API: Return Executive Summary, Tech Stack, Risks, Roadmap, & Sprint Plan JSON
     API->>PDF: Request PDF proposal document creation
     PDF-->>API: Save file and return report file path
     API->>DB: Write Estimate, AIResponse, and PDF Path records
     API-->>Client: Return complete structured proposal JSON
     deactivate API
-    Client->>Client: Render interactive Dashboard
+    Client->>Client: Render interactive Dashboard (Charts, Sprints, Roadmap tabs)
     Client->>API: GET /api/estimate/{id}/pdf (Download proposal)
 ```
+
+---
+
+## 🛠️ Technology Stack
+
+### Frontend Client
+*   **React + Vite**: Delivers hot-reloading dev servers and optimized static production builds.
+*   **Tailwind CSS v4**: Utility-first CSS engine powering custom glassmorphic panels, dark themes, and responsive layout structures.
+*   **Framer Motion**: Controls smooth multi-step card transitions, progress bars, and hover animations.
+*   **Lucide React**: Vector icons representing dashboards, categories, and metrics.
+
+### Backend Services
+*   **FastAPI (Python)**: High-performance web framework using asynchronous logic and auto-generated interactive OpenAPI docs (`/docs`).
+*   **Pydantic (v2)**: Performs run-time validation on client requests (e.g. strict `EmailStr` and structure).
+*   **SQLAlchemy ORM**: Handles SQL database mappings cleanly through Python classes, preventing raw query injection.
+*   **ReportLab**: Programmatically draws proposal reports to PDF, structuring scope items, milestones, and risks in tabular layouts.
+*   **OpenAI SDK**: Interfaces with standard GPT models (`gpt-4o-mini`) using structured JSON outputs.
 
 ---
 
@@ -68,35 +72,36 @@ Ai_estimator/
 ├── backend/
 │   ├── api/
 │   │   ├── __init__.py
-│   │   └── main.py          # FastAPI application, routers & CORS
+│   │   └── main.py          # FastAPI application routers, endpoints, and CORS config
 │   ├── database/
 │   │   ├── __init__.py
-│   │   ├── connection.py    # SQLAlchemy engine, session maker & Base
-│   │   └── models.py        # Table models (Projects, Estimates, AIResponses, Reports)
+│   │   ├── connection.py    # SQLAlchemy engine, session maker, and DB path mapping
+│   │   └── models.py        # Relational models (Project, Estimate, AIResponse, Report)
 │   ├── rule_engine/
 │   │   ├── __init__.py
-│   │   └── engine.py        # Calculation multipliers (hours, cost, team size)
+│   │   └── engine.py        # Calculation multipliers (hours, cost, team size, timelines)
 │   ├── ai/
 │   │   ├── __init__.py
 │   │   └── integration.py   # OpenAI client prompts & local templating fallback
 │   ├── reports/
 │   │   ├── __init__.py
-│   │   ├── pdf_gen.py       # PDF document creation using ReportLab
+│   │   ├── pdf_gen.py       # PDF document creation using ReportLab Flowables
 │   │   └── files/           # Generated PDF proposals target folder
 │   ├── requirements.txt     # Python requirements
 │   └── project_estimator.db # Auto-created SQLite DB file
 └── frontend/
     ├── src/
     │   ├── main.jsx
-    │   ├── index.css        # Tailwind v4 import
-    │   ├── App.jsx          # UI layout view router
+    │   ├── index.css        # Tailwind v4 imports and base style system
+    │   ├── App.jsx          # UI layout view router (Landing -> Questionnaire -> Dashboard)
     │   ├── services/
-    │   │   └── api.js        # API fetch client calls
     │   └── components/
-    │       ├── LandingPage.jsx  # Hero description
-    │       ├── Questionnaire.jsx# Guided form steps
-    │       ├── LoadingScreen.jsx# Processing status bar animations
-    │       └── Dashboard.jsx    # Estimates tables & PDF triggers
+    │       ├── LandingPage.jsx      # Portal hero description
+    │       ├── Questionnaire.jsx    # Guided multi-step form wizard
+    │       ├── LoadingScreen.jsx    # Processing status bar animations
+    │       ├── Dashboard.jsx        # Estimates tables, interactive roadmap, & PDF downloads
+    │       ├── AdminLogin.jsx       # Protected administrator authentication layout
+    │       └── AdminDashboard.jsx   # List of all estimates, details view, and record deletion
     ├── index.html
     ├── vite.config.js
     └── package.json
@@ -123,9 +128,9 @@ Ai_estimator/
     *If no key is configured, the application automatically uses local high-fidelity templates.*
 4.  Launch the FastAPI server:
     ```bash
-    python -m uvicorn backend.api.main:app --port 8000
+    python -m uvicorn backend.api.main:app --port 8000 --reload
     ```
-    The server will startup and listen on `http://127.0.0.1:8000`.
+    The server will start and listen on `http://127.0.0.1:8000`.
 
 ### 2. Frontend Client Setup
 1.  Navigate to the `frontend/` directory:
@@ -141,3 +146,22 @@ Ai_estimator/
     npm run dev -- --port 5173
     ```
     Open your browser and navigate to **`http://localhost:5173`** to access the application.
+
+---
+
+## 📊 Estimation Formula Rules
+
+The rule engine calculates effort based on baseline requirements, platform configurations, and industry complexities:
+
+*   **Base Hours**: Baseline modules (e.g. `auth` is **40 hours**, `payments` is **30 hours**, `ai` is **80 hours**).
+*   **Platform Multipliers**:
+    *   Single: Web (**1.0**), Desktop (**1.2**), Mobile (**1.3**)
+    *   Dual: Web+Desktop (**1.5**), Web+Mobile (**1.7**), Mobile+Desktop (**1.8**)
+    *   All Three: Web+Mobile+Desktop (**2.2**)
+*   **Industry Multipliers**:
+    *   `other`: **1.0**
+    *   `education`/`saas`: **1.1**
+    *   `ecommerce`/`social`: **1.2**
+    *   `finance`: **1.4**
+    *   `healthcare`: **1.5**
+*   **Cost Matrix**: $\text{Hours} \times \$100/\text{hour}$.

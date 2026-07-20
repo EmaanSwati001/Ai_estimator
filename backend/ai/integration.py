@@ -499,3 +499,210 @@ def generate_ai_response(
         "roadmap": roadmap,
         "sprint_plan": sprint_plan
     }
+
+def run_chat_discovery(messages: list) -> dict:
+    """
+    Drives the ScopePilot AI conversational discovery session.
+    Takes the thread of messages and either returns the next question
+    or finishes and compiles the project metadata.
+    """
+    api_key = os.environ.get("OPENAI_API_KEY")
+    
+    # Filter messages to get only user messages for the fallback state engine
+    user_msgs = [m for m in messages if m.get("role") == "user"]
+    
+    if api_key:
+        try:
+            client = OpenAI(api_key=api_key)
+            
+            system_prompt = (
+                "You are ScopePilot AI, an expert IT Business Analyst. Your goal is to guide a discovery chat "
+                "with a client to define their project scope. Ask questions one at a time.\n"
+                "Gather these details:\n"
+                "1. User's full name and email address.\n"
+                "2. Project name and clear goals.\n"
+                "3. Industry (must be exactly one of: ecommerce, finance, healthcare, education, social, saas, other).\n"
+                "4. Target platforms (must be list containing one or more of: web, mobile, desktop).\n"
+                "5. Core feature set (e.g. auth, dashboard, payments, chat, notifications, search, upload, ai, admin, multilang, thirdparty).\n\n"
+                "Respond ONLY with a JSON object. Do not output any markdown code blocks, backticks, or other text. "
+                "The response must fit one of these two structures:\n\n"
+                "If you need more details to form a complete understanding:\n"
+                "{\n"
+                "  \"finished\": false,\n"
+                "  \"question\": \"Your next follow-up question here\"\n"
+                "}\n\n"
+                "If you have gathered all necessary information (name, email, project name, description, industry, platforms, and 3+ features):\n"
+                "{\n"
+                "  \"finished\": true,\n"
+                "  \"project_data\": {\n"
+                "    \"name\": \"Client Name\",\n"
+                "    \"email\": \"client@example.com\",\n"
+                "    \"project_name\": \"Project Title\",\n"
+                "    \"description\": \"A 3-4 sentence detailed scope description summarizing their needs.\",\n"
+                "    \"industry\": \"ecommerce\",\n"
+                "    \"platforms\": [\"web\", \"mobile\"],\n"
+                "    \"features\": [\"auth\", \"payments\", \"dashboard\"]\n"
+                "  }\n"
+                "}"
+            )
+            
+            # Prepare messages list for API
+            api_messages = [{"role": "system", "content": system_prompt}]
+            api_messages.extend(messages[-10:])
+            
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=api_messages,
+                temperature=0.7,
+                response_format={"type": "json_object"}
+            )
+            
+            content = response.choices[0].message.content.strip()
+            data = json.loads(content)
+            
+            if "finished" in data:
+                return data
+        except Exception as e:
+            print(f"OpenAI chat discovery failed, falling back. Error: {e}")
+            
+    # --- FALLBACK STATE ENGINE ---
+    num_user_msgs = len(user_msgs)
+    
+    if num_user_msgs == 0:
+        return {
+            "finished": False,
+            "question": "Hello! I am ScopePilot AI, your project discovery assistant. Let's design your software. To get started, what is your full name and email address?"
+        }
+        
+    elif num_user_msgs == 1:
+        return {
+            "finished": False,
+            "question": "Nice to meet you! What is the name of your project, and could you describe what it does in a few sentences?"
+        }
+        
+    elif num_user_msgs == 2:
+        return {
+            "finished": False,
+            "question": "Perfect. Which industry category matches your project best? (e.g. E-Commerce, Finance, Healthcare, Education, Social Media, SaaS, or Custom/Other?)"
+        }
+        
+    elif num_user_msgs == 3:
+        return {
+            "finished": False,
+            "question": "Understood. What platforms should we target? (Web App, Mobile App (iOS/Android), and/or Desktop App? Select all that apply.)"
+        }
+        
+    elif num_user_msgs == 4:
+        return {
+            "finished": False,
+            "question": "Excellent. Lastly, what are the primary features you need? (e.g. user accounts/login, analytical dashboard, payment processing, live chat, push notifications, file uploads, AI features, or an admin console?)"
+        }
+        
+    else:
+        # Gathered everything. Parse the conversation history to extract fields
+        name = "Client Partner"
+        email = "partner@example.com"
+        project_name = "ScopePilot Project"
+        description = "A custom software project scoped via ScopePilot AI discovery."
+        industry = "other"
+        platforms = ["web"]
+        features = ["auth"]
+        
+        # Simple heuristics for name/email from the first message
+        if len(user_msgs) > 0:
+            first_msg = user_msgs[0].get("content", "")
+            import re
+            emails = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', first_msg)
+            if emails:
+                email = emails[0]
+            words = first_msg.replace(",", " ").split()
+            for w in ["name", "is", "i'm", "im"]:
+                if w in words:
+                    idx = words.index(w)
+                    if idx + 1 < len(words):
+                        name = " ".join(words[idx+1:idx+3])
+                        break
+            if name == "Client Partner" and len(words) > 0:
+                name = " ".join(words[:2])
+                
+        # Heuristics for project name and description
+        if len(user_msgs) > 1:
+            desc_msg = user_msgs[1].get("content", "")
+            description = desc_msg
+            words = desc_msg.replace("is", " ").split()
+            if len(words) > 0:
+                project_name = " ".join(words[:3]).title()
+                
+        # Heuristics for industry
+        if len(user_msgs) > 2:
+            ind_msg = user_msgs[2].get("content", "").lower()
+            if "ecom" in ind_msg or "shop" in ind_msg or "retail" in ind_msg or "commerce" in ind_msg:
+                industry = "ecommerce"
+            elif "fin" in ind_msg or "bank" in ind_msg or "money" in ind_msg or "pay" in ind_msg:
+                industry = "finance"
+            elif "health" in ind_msg or "doctor" in ind_msg or "patient" in ind_msg or "medical" in ind_msg:
+                industry = "healthcare"
+            elif "learn" in ind_msg or "educ" in ind_msg or "school" in ind_msg or "class" in ind_msg:
+                industry = "education"
+            elif "social" in ind_msg or "media" in ind_msg or "network" in ind_msg:
+                industry = "social"
+            elif "saas" in ind_msg or "b2b" in ind_msg or "cloud" in ind_msg or "software" in ind_msg:
+                industry = "saas"
+                
+        # Heuristics for platforms
+        if len(user_msgs) > 3:
+            plat_msg = user_msgs[3].get("content", "").lower()
+            platforms_list = []
+            if "web" in plat_msg or "browser" in plat_msg:
+                platforms_list.append("web")
+            if "mobile" in plat_msg or "ios" in plat_msg or "android" in plat_msg or "phone" in plat_msg or "app" in plat_msg:
+                platforms_list.append("mobile")
+            if "desktop" in plat_msg or "mac" in plat_msg or "windows" in plat_msg:
+                platforms_list.append("desktop")
+            if platforms_list:
+                platforms = platforms_list
+                
+        # Heuristics for features
+        if len(user_msgs) > 4:
+            feat_msg = user_msgs[4].get("content", "").lower()
+            features_list = []
+            if "login" in feat_msg or "auth" in feat_msg or "account" in feat_msg:
+                features_list.append("auth")
+            if "dashboard" in feat_msg or "chart" in feat_msg or "metric" in feat_msg or "report" in feat_msg:
+                features_list.append("dashboard")
+            if "payment" in feat_msg or "stripe" in feat_msg or "sub" in feat_msg or "billing" in feat_msg:
+                features_list.append("payments")
+            if "chat" in feat_msg or "message" in feat_msg or "slack" in feat_msg:
+                features_list.append("chat")
+            if "notification" in feat_msg or "push" in feat_msg or "alert" in feat_msg:
+                features_list.append("notifications")
+            if "search" in feat_msg or "filter" in feat_msg or "find" in feat_msg:
+                features_list.append("search")
+            if "upload" in feat_msg or "s3" in feat_msg or "file" in feat_msg or "image" in feat_msg:
+                features_list.append("upload")
+            if "ai" in feat_msg or "llm" in feat_msg or "recommend" in feat_msg or "gpt" in feat_msg:
+                features_list.append("ai")
+            if "admin" in feat_msg or "cms" in feat_msg or "console" in feat_msg:
+                features_list.append("admin")
+            if "lang" in feat_msg or "trans" in feat_msg or "i18n" in feat_msg:
+                features_list.append("multilang")
+            if "api" in feat_msg or "third" in feat_msg or "external" in feat_msg:
+                features_list.append("thirdparty")
+                
+            if features_list:
+                features = features_list
+            else:
+                features = ["auth", "dashboard"]
+                
+        return {
+            "finished": True,
+            "project_data": {
+                "name": name.strip(),
+                "email": email.strip(),
+                "project_name": project_name.strip(),
+                "description": description.strip(),
+                "industry": industry,
+                "platforms": platforms,
+                "features": features
+            }
+        }

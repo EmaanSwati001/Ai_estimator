@@ -1,113 +1,141 @@
 import React, { useState } from "react";
-import { Layers, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowLeft, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Hardcoded admin credentials
-const ADMIN_EMAIL = "admin@example.com";
-const ADMIN_PASSWORD = "password123";
-
-export default function AdminLogin({ onLogin }) {
+export default function AdminLogin({ onLogin, onBack }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
+    if (!email || !password) {
+      setErrorMsg("Please enter both email and password.");
+      return;
+    }
+    
     setLoading(true);
-
-    // Simulate a brief auth check delay for UX polish
+    setErrorMsg("");
+    
+    // Simulate admin login credentials check (mock authentications details)
     setTimeout(() => {
-      if (email.trim() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      if (email.trim() === "admin@projectpilot.ai" && password === "admin123") {
         onLogin();
       } else {
-        setError("Invalid credentials. Please check your email and password.");
+        setErrorMsg("Invalid administrator email or password details.");
+        setLoading(false);
       }
-      setLoading(false);
-    }, 600);
+    }, 1200);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center relative overflow-hidden px-4">
-      {/* Background gradients */}
-      <div className="absolute top-[-15%] left-[-10%] w-[45%] h-[45%] rounded-full bg-indigo-500/8 blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[45%] h-[45%] rounded-full bg-purple-500/8 blur-[140px] pointer-events-none" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between relative overflow-hidden">
+      
+      {/* Background Gradients */}
+      <div className="absolute top-[-10%] right-[-10%] w-[45%] h-[40%] rounded-full bg-indigo-500/5 blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[45%] h-[40%] rounded-full bg-purple-500/5 blur-[130px] pointer-events-none" />
 
-      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-slate-900/60 border border-slate-800 rounded-3xl p-8 backdrop-blur-md shadow-2xl space-y-8">
-
-        {/* Logo & Title */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 shadow-xl shadow-indigo-500/20">
-            <Lock className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <Layers className="w-4 h-4 text-indigo-400" />
-              <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider">EstimatorAI</span>
+      {/* Header */}
+      <header className="py-6 px-6">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center">
+              <Layers className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-2xl font-extrabold tracking-tight">Admin Portal</h1>
-            <p className="text-slate-400 text-sm mt-1">Sign in to access the admin dashboard</p>
+            <span className="font-extrabold text-base tracking-tight text-slate-200">ProjectPilot AI</span>
           </div>
         </div>
+      </header>
 
-        {/* Error Banner */}
-        {error && (
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 p-4 rounded-xl bg-red-950/40 border border-red-500/30 text-red-400 text-sm">
-            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span>{error}</span>
-          </motion.div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="admin@example.com"
-              required
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm transition-all"
-            />
+      {/* Main Login Card */}
+      <main className="flex-grow flex items-center justify-center px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full bg-slate-900/40 border border-slate-900 rounded-3xl p-8 backdrop-blur-md shadow-2xl space-y-6"
+        >
+          
+          <div className="text-center space-y-1.5">
+            <h2 className="text-xl font-black text-slate-100">Admin Control Center</h2>
+            <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">ProjectPilot AI Portal</p>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Password</label>
-            <div className="relative">
-              <input
-                type={showPass ? "text" : "password"}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Enter admin password"
-                required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 pr-12 text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-sm transition-all"
-              />
-              <button type="button" onClick={() => setShowPass(!showPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors cursor-pointer">
-                {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          {errorMsg && (
+            <div className="p-4 rounded-xl bg-red-950/40 border border-red-500/20 text-red-400 text-xs font-bold">
+              {errorMsg}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Admin Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => { setEmail(e.target.value); setErrorMsg(""); }}
+                  placeholder="admin@projectpilot.ai"
+                  className="w-full bg-slate-950/80 border border-slate-850 rounded-xl pl-11 pr-4 py-3.5 text-xs text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-colors shadow-inner" 
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Secure Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => { setPassword(e.target.value); setErrorMsg(""); }}
+                  placeholder="••••••••"
+                  className="w-full bg-slate-950/80 border border-slate-850 rounded-xl pl-11 pr-4 py-3.5 text-xs text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-colors shadow-inner" 
+                />
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-indigo-550 to-purple-550 hover:from-indigo-450 hover:to-purple-450 disabled:opacity-50 text-white text-xs font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-500/10 cursor-pointer flex items-center justify-center space-x-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Verifying Credentials...</span>
+                  </>
+                ) : (
+                  <span>Access Admin Panel</span>
+                )}
               </button>
             </div>
+
+          </form>
+
+          <div className="text-center pt-2">
+            <button 
+              type="button" 
+              onClick={() => {
+                // If onBack is not defined, we reset view to landing by modifying App.jsx logic
+                window.location.reload();
+              }}
+              className="text-xs font-bold text-slate-500 hover:text-slate-355 transition-colors cursor-pointer"
+            >
+              &larr; Back to Landing Page
+            </button>
           </div>
 
-          <button type="submit" disabled={loading}
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20 cursor-pointer flex items-center justify-center gap-2">
-            {loading ? (
-              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /><span>Authenticating...</span></>
-            ) : (
-              <span>Sign In to Admin</span>
-            )}
-          </button>
-        </form>
+        </motion.div>
+      </main>
 
-        <p className="text-center text-xs text-slate-600">
-          Secured admin access — EstimatorAI v2.0
-        </p>
-      </motion.div>
+      <footer className="py-6 text-center text-[10px] text-slate-650">
+        Unauthorized access attempts are monitored and logged to security trails.
+      </footer>
+
     </div>
   );
 }
