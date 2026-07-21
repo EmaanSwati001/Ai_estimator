@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 # Import our database modules
 from backend.database.connection import engine, Base, get_db
@@ -38,8 +38,8 @@ class ChatDiscoveryRequest(BaseModel):
 
 class ChatDiscoveryResponse(BaseModel):
     finished: bool
-    question: str = None
-    project_data: dict = None
+    question: Optional[str] = None
+    project_data: Optional[dict] = None
 
 class RecommendRequest(BaseModel):
     industry: str
