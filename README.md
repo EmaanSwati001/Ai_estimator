@@ -1,6 +1,6 @@
-# AI Project Estimator & Proposal Generator (v2.0)
+# ProjectPilot AI — Project Estimator & Proposal Generator (v2.0)
 
-An intelligent, full-stack enterprise automation platform designed to streamline software discovery and consulting. By collecting requirements through a dynamic React-based wizard, the platform calculates development scopes using a deterministic rule engine, generates professional roadmaps, sprint plans, and tech recommendations using AI, and compiles downloadable branded PDF proposals.
+An intelligent, full-stack enterprise automation platform designed to streamline software discovery and consulting. By collecting project scope requirements through a dynamic React-based guided wizard, the platform calculates development costs using a deterministic rule engine, generates professional roadmaps, agile sprint plans, and tech recommendations using AI, and compiles downloadable branded PDF proposals.
 
 ---
 
@@ -12,7 +12,7 @@ An intelligent, full-stack enterprise automation platform designed to streamline
 *   **Dual AI Architecture**: Uses the OpenAI API (`gpt-4o-mini`) to write executive summaries, suggest technology stacks, map milestones, and construct sprint checklists. Automatically falls back to high-fidelity, hand-crafted templates if no API key is present.
 *   **Dynamic Roadmaps & Agile Sprint Plans**: Automatically schedules core features across a 3-phase development roadmap and segments objectives, deliverables, and effort across logical 2-week sprints.
 *   **Professional PDF Generator**: Compiles proposals on-the-fly using `ReportLab`, producing beautifully styled documents with cover pages, custom page-breaks, clean table layouts, and headers/footers.
-*   **Admin Dashboard**: A secure management portal where administrators can view all client submissions, review calculated metrics, download generated proposal PDFs, and delete stale database records.
+*   **Admin Dashboard**: A secure management portal where administrators can view all client submissions, review calculated metrics, download generated proposal PDFs, and delete database records.
 *   **SQLite Storage**: Retains all client submissions, estimations, and AI responses locally with database cascade deletes.
 
 ---
@@ -52,7 +52,7 @@ sequenceDiagram
 
 ### Frontend Client
 *   **React + Vite**: Delivers hot-reloading dev servers and optimized static production builds.
-*   **Tailwind CSS v4**: Utility-first CSS engine powering custom glassmorphic panels, dark themes, and responsive layout structures.
+*   **Tailwind CSS**: Utility-first CSS engine powering custom glassmorphic panels, dark themes, and responsive layout structures.
 *   **Framer Motion**: Controls smooth multi-step card transitions, progress bars, and hover animations.
 *   **Lucide React**: Vector icons representing dashboards, categories, and metrics.
 
@@ -92,7 +92,7 @@ Ai_estimator/
 └── frontend/
     ├── src/
     │   ├── main.jsx
-    │   ├── index.css        # Tailwind v4 imports and base style system
+    │   ├── index.css        # Tailwind imports and base style system
     │   ├── App.jsx          # UI layout view router (Landing -> Questionnaire -> Dashboard)
     │   ├── services/
     │   └── components/
@@ -112,8 +112,8 @@ Ai_estimator/
 ## ⚙️ Local Setup Instructions
 
 ### Prerequisites
-*   **Python**: Version `3.13` or similar installed.
-*   **Node.js**: Version `24` or similar and **npm** installed.
+*   **Python**: Version `3.10+` installed.
+*   **Node.js**: Version `18+` and **npm** installed.
 
 ### 1. Backend Service Configuration
 1.  Navigate to the project root directory.
