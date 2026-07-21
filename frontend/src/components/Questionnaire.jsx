@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight, Layers, ShieldCheck, Sparkles, Plus, X, Loader2, MessageSquare, Compass, Send, User } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight, Layers, ShieldCheck, Sparkles, Plus, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getRecommendations, submitChatDiscovery } from "../services/api";
+import { getRecommendations } from "../services/api";
 
 const INDUSTRIES = [
   { id: "ecommerce", name: "E-Commerce & Retail", desc: "Online retail, shopping carts, checkout, coupons" },
@@ -62,8 +62,8 @@ const EFFORT_COLORS = {
 };
 
 export default function Questionnaire({ onSubmit, onBackToLanding }) {
-  // Discovery Path: null (choice), 'wizard' (form), 'chat' (conversational)
-  const [discoveryPath, setDiscoveryPath] = useState(null);
+  // Discovery Path: directly set to 'wizard'
+  const [discoveryPath, setDiscoveryPath] = useState("wizard");
 
   // Wizard state variables
   const [step, setStep] = useState(1);
@@ -76,20 +76,6 @@ export default function Questionnaire({ onSubmit, onBackToLanding }) {
   const [loadingRecs, setLoadingRecs] = useState(false);
   const [recsError, setRecsError] = useState("");
   const [validationError, setValidationError] = useState("");
-
-  // Conversational state variables
-  const [chatMessages, setChatMessages] = useState([
-    { role: "assistant", content: "Hello! I am ScopePilot AI, your project discovery assistant. Let's design your software. To get started, what is your full name and email address?" }
-  ]);
-  const [chatInput, setChatInput] = useState("");
-  const [chatLoading, setChatLoading] = useState(false);
-  const chatEndRef = useRef(null);
-
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chatMessages, chatLoading]);
 
   // Wizard input handlers
   const handleTextChange = (e) => {
@@ -168,7 +154,7 @@ export default function Questionnaire({ onSubmit, onBackToLanding }) {
 
   const handlePrev = () => {
     if (step === 1) {
-      setDiscoveryPath(null);
+      onBackToLanding();
       return;
     }
     setStep(step - 1);
@@ -183,44 +169,7 @@ export default function Questionnaire({ onSubmit, onBackToLanding }) {
     onSubmit({ ...formData, features: allFeatureIds });
   };
 
-  // Conversational Assistant Handlers
-  const handleSendChatMessage = async (e) => {
-    e.preventDefault();
-    if (!chatInput.trim() || chatLoading) return;
 
-    const userMessage = { role: "user", content: chatInput.trim() };
-    const updatedMessages = [...chatMessages, userMessage];
-    
-    setChatMessages(updatedMessages);
-    setChatInput("");
-    setChatLoading(true);
-
-    try {
-      const response = await submitChatDiscovery(updatedMessages);
-      
-      if (response.finished && response.project_data) {
-        setChatMessages(prev => [...prev, { 
-          role: "assistant", 
-          content: `🎉 Discovery Complete! I have successfully mapped your project '${response.project_data.project_name}'. Generating estimate proposal...` 
-        }]);
-        
-        // Auto submit after a brief visual confirmation delay
-        setTimeout(() => {
-          onSubmit(response.project_data);
-        }, 2000);
-      } else {
-        setChatMessages(prev => [...prev, { role: "assistant", content: response.question }]);
-      }
-    } catch (err) {
-      console.error(err);
-      setChatMessages(prev => [...prev, { 
-        role: "assistant", 
-        content: "I encountered a network problem connecting to the ScopePilot AI discovery server. Please ensure the backend is running locally." 
-      }]);
-    } finally {
-      setChatLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between relative overflow-x-hidden">
@@ -247,82 +196,11 @@ export default function Questionnaire({ onSubmit, onBackToLanding }) {
               </div>
             </div>
           )}
-          {discoveryPath === "chat" && (
-            <div className="flex items-center space-x-2 bg-indigo-950/40 border border-indigo-500/20 px-3 py-1 rounded-full">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              <span className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider">Discovery Session Active</span>
-            </div>
-          )}
         </div>
       </header>
 
       {/* Main Container */}
       <main className="flex-grow flex items-center justify-center px-4 py-10">
-        
-        {/* CHOICE: Select Path */}
-        {discoveryPath === null && (
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl w-full text-center space-y-8"
-          >
-            <div className="space-y-3">
-              <div className="inline-flex items-center space-x-2 bg-indigo-950/40 border border-indigo-500/20 rounded-full px-4.5 py-1.5 text-xs font-bold text-indigo-300 shadow">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                <span>Choose Your Discovery Method</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-100">How would you like to scope your project?</h2>
-              <p className="text-slate-400 text-sm max-w-lg mx-auto">
-                Configure your MVP parameters through our step-by-step wizard, or discuss goals conversationally with our ScopePilot AI Business Analyst.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-              
-              {/* Wizard Choice Card */}
-              <button 
-                onClick={() => setDiscoveryPath("wizard")}
-                className="p-8 rounded-3xl bg-slate-900/35 border border-slate-900 hover:border-slate-800 hover:bg-slate-900/60 transition-all text-left flex flex-col justify-between h-[230px] group cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition-transform shadow-inner">
-                  <Compass className="w-6 h-6" />
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="font-extrabold text-lg text-slate-200">Classic Form Wizard</h3>
-                  <p className="text-slate-400 text-xs leading-relaxed">
-                    Select target platforms, industries, and modular scope features step-by-step through guided cards.
-                  </p>
-                </div>
-              </button>
-
-              {/* Chat Choice Card */}
-              <button 
-                onClick={() => setDiscoveryPath("chat")}
-                className="p-8 rounded-3xl bg-slate-900/35 border border-slate-900 hover:border-slate-800 hover:bg-slate-900/60 transition-all text-left flex flex-col justify-between h-[230px] group cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform shadow-inner">
-                  <MessageSquare className="w-6 h-6" />
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="font-extrabold text-lg text-slate-200">ScopePilot AI Assistant</h3>
-                  <p className="text-slate-400 text-xs leading-relaxed">
-                    Have an interactive chat session with our AI Business Analyst to automatically outline constraints and calculate scope details.
-                  </p>
-                </div>
-              </button>
-              
-            </div>
-
-            <div className="pt-4">
-              <button 
-                onClick={onBackToLanding}
-                className="text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
-              >
-                &larr; Back to Landing Page
-              </button>
-            </div>
-          </motion.div>
-        )}
 
         {/* PATH A: Guided Form Wizard */}
         {discoveryPath === "wizard" && (
@@ -478,7 +356,7 @@ export default function Questionnaire({ onSubmit, onBackToLanding }) {
                       AI Feature Recommendations
                     </h2>
                     <p className="text-slate-400 text-xs mt-1">
-                      ScopePilot AI suggests these custom features based on your industry segment. Review the benefit metrics below.
+                      Our system suggests these custom features based on your industry segment. Review the benefit metrics below.
                     </p>
                   </div>
 
@@ -627,91 +505,7 @@ export default function Questionnaire({ onSubmit, onBackToLanding }) {
           </div>
         )}
 
-        {/* PATH B: Conversational ScopePilot AI Chat */}
-        {discoveryPath === "chat" && (
-          <div className="max-w-2xl w-full bg-slate-900/40 border border-slate-900 rounded-3xl p-6 backdrop-blur-md shadow-2xl flex flex-col h-[520px]">
-            
-            {/* Chat Panel Header */}
-            <div className="flex items-center justify-between border-b border-slate-900 pb-4 mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-                  <Sparkles className="w-5.5 h-5.5 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-sm text-slate-200">ScopePilot AI</h3>
-                  <p className="text-[10px] text-slate-500">AI Business Analyst & Scoping Specialist</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setDiscoveryPath(null)}
-                className="text-[10px] font-bold text-slate-500 hover:text-slate-350 border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-              >
-                Exit Chat
-              </button>
-            </div>
 
-            {/* Chat History Panel */}
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4">
-              {chatMessages.map((msg, idx) => {
-                const isAssistant = msg.role === "assistant";
-                return (
-                  <div 
-                    key={idx} 
-                    className={`flex items-start gap-3 ${isAssistant ? "justify-start" : "justify-end"}`}
-                  >
-                    {isAssistant && (
-                      <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mt-1 flex-shrink-0">
-                        <Sparkles className="w-3.5 h-3.5" />
-                      </div>
-                    )}
-                    <div 
-                      className={`p-3 rounded-2xl max-w-[80%] text-xs leading-relaxed ${isAssistant ? "bg-slate-950/60 border border-slate-900 text-slate-300" : "bg-gradient-to-tr from-indigo-650 to-purple-650 text-white font-medium shadow-md shadow-indigo-500/5"}`}
-                    >
-                      {msg.content}
-                    </div>
-                    {!isAssistant && (
-                      <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 mt-1 flex-shrink-0 border border-slate-750">
-                        <User className="w-3.5 h-3.5" />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              {chatLoading && (
-                <div className="flex items-start gap-3 justify-start">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mt-1 flex-shrink-0">
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                  </div>
-                  <div className="bg-slate-950/60 border border-slate-900 p-3.5 rounded-2xl flex items-center space-x-2">
-                    <Loader2 className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">ScopePilot is analyzing...</span>
-                  </div>
-                </div>
-              )}
-              <div ref={chatEndRef} />
-            </div>
-
-            {/* Chat Input Bar */}
-            <form onSubmit={handleSendChatMessage} className="flex gap-2">
-              <input 
-                type="text" 
-                value={chatInput} 
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Type your response here..."
-                disabled={chatLoading}
-                className="flex-1 bg-slate-950 border border-slate-850 rounded-xl px-4 py-3 text-xs outline-none focus:border-indigo-500 text-slate-200 transition-colors shadow-inner" 
-              />
-              <button 
-                type="submit" 
-                disabled={chatLoading || !chatInput.trim()}
-                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white p-3 rounded-xl transition-all shadow shadow-indigo-500/15 cursor-pointer flex-shrink-0"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
-            
-          </div>
-        )}
       </main>
 
       <footer className="py-4 text-center text-[10px] text-slate-650">

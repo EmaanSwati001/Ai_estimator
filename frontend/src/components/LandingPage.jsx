@@ -16,11 +16,11 @@ export default function LandingPage({ onStart, onAdminClick }) {
     },
     {
       q: "Can I download the full proposal as a PDF?",
-      a: "Yes. Once ScopePilot AI processes your inputs and compiles the project specifications, the proposal dashboard provides an instant PDF download option. The report includes an executive cover page, objectives, scope list, architecture stack, timeline, agile sprint planning, and technical risk mitigations."
+      a: "Yes. Once the proposal compiler processes your inputs and calculates specifications, the proposal dashboard provides an instant PDF download option. The report includes an executive cover page, objectives, scope list, architecture stack, timeline, agile sprint planning, and technical risk mitigations."
     },
     {
-      q: "What is the difference between Classic guided entry and ScopePilot AI?",
-      a: "The Classic Guided Wizard walks you step-by-step through a visual interface to select industry, target platforms, and features. ScopePilot AI is a conversational assistant panel that mimics a real Business Analyst interview. You talk about your application in plain English, and the AI dynamically asks follow-up questions to automatically compile your specification."
+      q: "How fast can I generate a full project proposal?",
+      a: "The guided form takes less than 3 minutes to complete. Once submitted, our deterministic rule engine and AI compiler instantly generate your custom proposal dashboard and downloadable PDF report."
     },
     {
       q: "Are the recommendations binding?",
@@ -149,11 +149,11 @@ export default function LandingPage({ onStart, onAdminClick }) {
               className="bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/20 p-4.5 rounded-2xl z-10 shadow-lg text-left"
             >
               <div className="flex items-center gap-2 mb-1.5">
-                <MessageSquare className="w-4 h-4 text-purple-400" />
-                <span className="text-xs font-bold text-slate-200">ScopePilot AI Analyst</span>
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-bold text-slate-200">ProjectPilot AI Engine</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-normal">
-                "Will your platform require third-party payment integrations to handle billing subscriptions?"
+                "Platform effort and features configured. Industry compliance multipliers applied."
               </p>
             </motion.div>
 
@@ -203,9 +203,9 @@ export default function LandingPage({ onStart, onAdminClick }) {
             <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition-transform shadow-inner">
               <MessageSquare className="w-6 h-6" />
             </div>
-            <h3 className="font-extrabold text-lg text-slate-200">ScopePilot AI</h3>
+            <h3 className="font-extrabold text-lg text-slate-200">Guided Scoping Engine</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Conversational requirements collection that acts like a Senior Business Analyst, extracting platforms, constraints, and features dynamically.
+              Step-by-step requirements collection that guides you through selecting platforms, constraints, and features cleanly.
             </p>
           </div>
 
@@ -243,7 +243,7 @@ export default function LandingPage({ onStart, onAdminClick }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative max-w-4xl mx-auto">
             
             {[
-              { step: "01", title: "Discovery Interaction", desc: "Choose the guided card form or discuss details conversationally with ScopePilot AI to outline project specifications." },
+              { step: "01", title: "Discovery Interaction", desc: "Use our guided form to quickly select target platforms, business industry, and custom project features." },
               { step: "02", title: "Compile Parameters", desc: "Our engine executes industry complexity multipliers and feature rules to calculate hours, costs, and timeline scopes." },
               { step: "03", title: "Review & Proposal", desc: "Interact with the proposal visualizer, review technology recommendations, inspect roadmaps, and download the client PDF." }
             ].map((item, idx) => (
@@ -291,7 +291,7 @@ export default function LandingPage({ onStart, onAdminClick }) {
                 role: "VP of Product, DevLab Inc."
               },
               {
-                text: "The split wizard/conversational approach is genius. Our technical clients love talking to ScopePilot, and the rule engine ensures we never underquote.",
+                text: "The guided wizard approach is simple and efficient. Our technical clients love it, and the rule engine ensures we never underquote.",
                 author: "Alex Rivera",
                 role: "Founder, Zenith SaaS Agency"
               },
@@ -377,7 +377,6 @@ export default function LandingPage({ onStart, onAdminClick }) {
             <h5 className="font-bold text-slate-400 uppercase tracking-widest text-[10px] mb-3">Discovery Mode</h5>
             <ul className="space-y-2 text-slate-500 text-xs font-semibold">
               <li><button onClick={onStart} className="hover:text-indigo-400 cursor-pointer">Start Form Wizard</button></li>
-              <li><button onClick={onStart} className="hover:text-indigo-400 cursor-pointer">ScopePilot AI Assistant</button></li>
             </ul>
           </div>
 

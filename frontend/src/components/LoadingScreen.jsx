@@ -56,7 +56,7 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
             Scoping Application
           </h3>
           <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
-            ScopePilot AI Proposal Compiler
+            ProjectPilot Proposal Compiler
           </p>
         </div>
 

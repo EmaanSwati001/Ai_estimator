@@ -11,7 +11,7 @@ from typing import List, Optional
 from backend.database.connection import engine, Base, get_db
 from backend.database.models import Project, Estimate, AIResponse, Report
 from backend.rule_engine.engine import calculate_estimate
-from backend.ai.integration import generate_ai_response, generate_feature_recommendations, run_chat_discovery
+from backend.ai.integration import generate_ai_response, generate_feature_recommendations
 from backend.reports.pdf_gen import generate_proposal_pdf
 
 # Ensure SQLite tables exist
@@ -27,19 +27,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# --- Pydantic Schema Definitions ---
-class ChatMessage(BaseModel):
-    role: str
-    content: str
-
-class ChatDiscoveryRequest(BaseModel):
-    messages: List[ChatMessage]
-
-class ChatDiscoveryResponse(BaseModel):
-    finished: bool
-    question: Optional[str] = None
-    project_data: Optional[dict] = None
 
 class RecommendRequest(BaseModel):
     industry: str
@@ -93,22 +80,6 @@ class FullProposalResponse(BaseModel):
     ai_response: AIResponseData
 
 # --- API Endpoints ---
-
-@app.post("/api/chat-discovery", response_model=ChatDiscoveryResponse)
-def chat_discovery(payload: ChatDiscoveryRequest):
-    """
-    Drives conversational requirement gathering by asking follow-up questions or finishing extraction.
-    """
-    try:
-        msg_list = [{"role": m.role, "content": m.content} for m in payload.messages]
-        result = run_chat_discovery(msg_list)
-        return ChatDiscoveryResponse(
-            finished=result.get("finished", False),
-            question=result.get("question"),
-            project_data=result.get("project_data")
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Discovery chat session failed: {str(e)}")
 
 @app.post("/api/recommend-features", response_model=List[RecommendResponseItem])
 def get_recommendations(payload: RecommendRequest):
