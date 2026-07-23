@@ -25,7 +25,6 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
           clearInterval(progressInterval);
           return 100;
         }
-        // Increment progress dynamically
         const diff = Math.random() * 6 + 2;
         return Math.min(old + diff, 100);
       });
@@ -34,7 +33,6 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
     return () => clearInterval(progressInterval);
   }, []);
 
-  // Finish immediately once progress hits 100% AND the proposal api has successfully returned
   useEffect(() => {
     if (progress === 100 && triggerFinished) {
       onFinished();
@@ -42,17 +40,17 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
   }, [progress, triggerFinished, onFinished]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col items-center justify-center relative overflow-hidden selection:bg-emerald-500/30">
       
       {/* Background Gradients */}
-      <div className="absolute top-[20%] left-[20%] w-[40%] h-[40%] rounded-full bg-indigo-500/5 blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-[20%] right-[20%] w-[40%] h-[40%] rounded-full bg-purple-500/5 blur-[130px] pointer-events-none" />
+      <div className="absolute top-[20%] left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-500/10 blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[20%] right-[20%] w-[40%] h-[40%] rounded-full bg-teal-500/10 blur-[130px] pointer-events-none" />
 
       <div className="max-w-md w-full px-6 space-y-8 z-10 text-center">
         
         {/* Title */}
         <div className="space-y-2">
-          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-200 via-purple-250 to-pink-200 bg-clip-text text-transparent">
+          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
             Scoping Application
           </h3>
           <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
@@ -60,8 +58,8 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
           </p>
         </div>
 
-        {/* Real-time Checklist */}
-        <div className="bg-slate-900/30 border border-slate-900 rounded-3xl p-6 text-left space-y-3.5 shadow-2xl backdrop-blur-sm">
+        {/* Real-time Checklist - Sleek Dark Card on Light Canvas */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 text-left space-y-3.5 shadow-2xl backdrop-blur-sm text-zinc-100">
           {LOADING_STEPS.map((step) => {
             const isCompleted = progress >= (step.minPct + 10);
             const isInProgress = progress >= step.minPct && progress < (step.minPct + 10);
@@ -80,12 +78,12 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
                 {isCompleted ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 ) : isInProgress ? (
-                  <Loader2 className="w-4 h-4 text-indigo-400 animate-spin flex-shrink-0" />
+                  <Loader2 className="w-4 h-4 text-emerald-400 animate-spin flex-shrink-0" />
                 ) : (
-                  <Circle className="w-4 h-4 text-slate-800 flex-shrink-0" />
+                  <Circle className="w-4 h-4 text-zinc-700 flex-shrink-0" />
                 )}
                 
-                <span className={`font-semibold transition-all ${isCompleted ? "text-slate-350 line-through decoration-slate-800" : isInProgress ? "text-indigo-300 font-bold" : "text-slate-500"}`}>
+                <span className={`font-semibold transition-all ${isCompleted ? "text-zinc-400 line-through decoration-zinc-700" : isInProgress ? "text-emerald-300 font-bold" : "text-zinc-500"}`}>
                   {step.text}
                 </span>
               </motion.div>
@@ -95,9 +93,9 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
 
         {/* Progressive Loading Bar */}
         <div className="space-y-3 pt-2">
-          <div className="w-full bg-slate-900 border border-slate-850 h-3 rounded-full overflow-hidden p-0.5 shadow-inner">
+          <div className="w-full bg-slate-200 border border-slate-300 h-3 rounded-full overflow-hidden p-0.5 shadow-inner">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-300"
+              className="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>

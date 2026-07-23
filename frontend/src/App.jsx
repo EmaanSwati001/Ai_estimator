@@ -35,15 +35,15 @@ export default function App() {
   };
 
   return (
-    <div className="bg-slate-950 min-h-screen text-slate-100 selection:bg-indigo-500/30">
+    <div className="bg-slate-50 min-h-screen text-slate-900 selection:bg-emerald-500/30">
       {/* Backend Error Toast */}
       {errorMsg && view === "questionnaire" && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-full px-4">
-          <div className="bg-red-950/90 border border-red-500/40 text-red-300 rounded-xl p-4 shadow-xl text-center text-sm backdrop-blur">
+          <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 shadow-xl text-center text-sm backdrop-blur">
             <p className="font-semibold">Backend Connection Issue</p>
-            <p className="text-xs text-red-400 mt-1">{errorMsg}</p>
+            <p className="text-xs text-red-600 mt-1">{errorMsg}</p>
             <button onClick={() => setErrorMsg("")}
-              className="mt-2 text-xs text-slate-300 hover:text-white underline cursor-pointer">
+              className="mt-2 text-xs text-red-700 hover:text-red-900 underline cursor-pointer font-medium">
               Dismiss
             </button>
           </div>

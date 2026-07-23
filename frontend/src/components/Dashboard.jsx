@@ -3,7 +3,7 @@ import {
   Download, RefreshCw, Clock, DollarSign, Users, Calendar, 
   AlertTriangle, CheckSquare, Server, Cpu, Database, Globe, 
   CloudLightning, ChevronRight, CheckCircle2, Circle, Map, Zap, 
-  ShieldCheck, Eye, Layers, Compass
+  ShieldCheck, Eye, Layers, Compass, Loader2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { getPdfUrl } from "../services/api";
@@ -52,13 +52,12 @@ export default function Dashboard({ proposal, onReset }) {
   // Complexity calculation
   const complexityScore = Math.min(100, Math.max(15, Math.round((estimate.hours / 600) * 100)));
   const getComplexityLabel = (score) => {
-    if (score < 35) return { text: "Low Complexity", color: "text-emerald-400 border-emerald-500/20 bg-emerald-950/20" };
-    if (score < 70) return { text: "Moderate Complexity", color: "text-amber-400 border-amber-500/20 bg-amber-950/20" };
-    return { text: "High Complexity", color: "text-red-400 border-red-500/20 bg-red-950/20" };
+    if (score < 35) return { text: "Low Complexity", color: "text-emerald-700 border-emerald-300 bg-emerald-50" };
+    if (score < 70) return { text: "Moderate Complexity", color: "text-amber-700 border-amber-300 bg-amber-50" };
+    return { text: "High Complexity", color: "text-red-700 border-red-300 bg-red-50" };
   };
   const complexity = getComplexityLabel(complexityScore);
 
-  // Proportional breakdown calculations
   const breakdown = estimate.breakdown || {
     design: estimate.cost * 0.15,
     frontend: estimate.cost * 0.35,
@@ -67,7 +66,6 @@ export default function Dashboard({ proposal, onReset }) {
     pm: estimate.cost * 0.08
   };
 
-  // Determine dynamic APIs to recommend
   const recommendApis = [];
   const featLower = features.map(f => f.toLowerCase());
   if (featLower.includes("payments") || featLower.includes("coupons")) {
@@ -102,26 +100,28 @@ export default function Dashboard({ proposal, onReset }) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-x-hidden pb-20 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-slate-50 text-slate-900 relative overflow-x-hidden pb-20 selection:bg-emerald-500/30">
       
-      {/* Background Gradients */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/5 blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/5 blur-[130px] pointer-events-none" />
+      {/* Dynamic Background Spotlights */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-500/10 blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-teal-500/10 blur-[130px] pointer-events-none" />
 
       {/* Header */}
-      <header className="border-b border-slate-900 bg-slate-950/40 py-4 px-6 sticky top-0 z-50 backdrop-blur-md">
+      <header className="border-b border-slate-200 bg-white/80 py-4 px-6 sticky top-0 z-50 backdrop-blur-md shadow-xs">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center shadow-xs">
               <Layers className="w-4 h-4 text-white" />
             </div>
-            <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-indigo-200 to-purple-200 bg-clip-text text-transparent">ProjectPilot AI</span>
+            <span className="font-extrabold text-base tracking-tight text-slate-900">
+              ProjectPilot <span className="text-emerald-600 font-semibold">AI</span>
+            </span>
           </div>
           <div className="flex items-center space-x-3">
             <button 
               onClick={handleDownloadPdf}
               disabled={downloading}
-              className="bg-indigo-650 hover:bg-indigo-600 disabled:opacity-50 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-1.5 transition-all shadow-md shadow-indigo-500/10 cursor-pointer"
+              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center space-x-1.5 transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
             >
               {downloading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -132,9 +132,9 @@ export default function Dashboard({ proposal, onReset }) {
             </button>
             <button 
               onClick={onReset}
-              className="bg-slate-900 border border-slate-850 hover:border-slate-750 text-slate-350 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center space-x-1 transition-all cursor-pointer"
+              className="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center space-x-1 transition-all cursor-pointer shadow-xs"
             >
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-3 h-3 text-slate-500" />
               <span>New Scoping</span>
             </button>
           </div>
@@ -147,19 +147,19 @@ export default function Dashboard({ proposal, onReset }) {
         <motion.div 
           initial={{ opacity: 0, y: 15 }} 
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-900 pb-8"
+          className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-8"
         >
           <div>
-            <span className="text-[10px] uppercase font-bold text-indigo-400 tracking-widest">Discovery Proposal Compiled</span>
-            <h1 className="text-3xl font-black text-slate-100 tracking-tight mt-1">{project_name}</h1>
-            <p className="text-slate-400 text-xs mt-1">
-              Prepared for <span className="font-bold text-slate-300">{client_name}</span> ({email}) &bull; <span className="capitalize text-slate-350">{industry} Sector</span>
+            <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-widest">Discovery Proposal Compiled</span>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight mt-1">{project_name}</h1>
+            <p className="text-slate-600 text-xs mt-1">
+              Prepared for <span className="font-bold text-slate-800">{client_name}</span> ({email}) &bull; <span className="capitalize text-slate-700">{industry} Sector</span>
             </p>
           </div>
           
           <div className="flex flex-wrap gap-2.5">
             {platforms.map(p => (
-              <span key={p} className="text-[9.5px] font-bold bg-slate-900/60 border border-slate-850 text-slate-350 px-3.5 py-1.5 rounded-full uppercase tracking-wider">{p}</span>
+              <span key={p} className="text-[9.5px] font-bold bg-white border border-slate-300 text-slate-700 px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-xs">{p}</span>
             ))}
           </div>
         </motion.div>
@@ -168,23 +168,23 @@ export default function Dashboard({ proposal, onReset }) {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           
           {[
-            { label: "Estimated Cost", val: `$${estimate.cost.toLocaleString()}`, icon: DollarSign, color: "text-indigo-400 bg-indigo-500/5 border-indigo-500/10" },
-            { label: "Total Effort", val: `${estimate.hours} Hours`, icon: Clock, color: "text-purple-400 bg-purple-500/5 border-purple-500/10" },
-            { label: "Target Duration", val: estimate.timeline, icon: Calendar, color: "text-pink-400 bg-pink-500/5 border-pink-500/10" },
-            { label: "Team Size", val: `${estimate.team.size} Resources`, icon: Users, color: "text-emerald-400 bg-emerald-500/5 border-emerald-500/10" },
+            { label: "Estimated Cost", val: `$${estimate.cost.toLocaleString()}`, icon: DollarSign, color: "text-emerald-700 bg-white border-slate-200" },
+            { label: "Total Effort", val: `${estimate.hours} Hours`, icon: Clock, color: "text-teal-700 bg-white border-slate-200" },
+            { label: "Target Duration", val: estimate.timeline, icon: Calendar, color: "text-slate-800 bg-white border-slate-200" },
+            { label: "Team Size", val: `${estimate.team.size} Resources`, icon: Users, color: "text-green-700 bg-white border-slate-200" },
           ].map((item, idx) => (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.08 }}
-              className={`p-5 rounded-2xl border flex flex-col justify-between h-[120px] bg-slate-900/25 ${item.color}`}
+              className={`p-5 rounded-2xl border flex flex-col justify-between h-[120px] shadow-xs ${item.color}`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">{item.label}</span>
-                <item.icon className="w-4 h-4 opacity-70" />
+                <span className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">{item.label}</span>
+                <item.icon className="w-4 h-4 opacity-70 text-emerald-600" />
               </div>
-              <h3 className="text-xl font-black text-slate-100 tracking-tight">{item.val}</h3>
+              <h3 className="text-xl font-black text-slate-900 tracking-tight">{item.val}</h3>
             </motion.div>
           ))}
 
@@ -193,20 +193,20 @@ export default function Dashboard({ proposal, onReset }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.32 }}
-            className="p-5 rounded-2xl border border-slate-850/80 bg-slate-900/25 flex flex-col justify-between h-[120px] col-span-2 md:col-span-1"
+            className="p-5 rounded-2xl border border-slate-200 bg-white flex flex-col justify-between h-[120px] col-span-2 md:col-span-1 shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Complexity Score</span>
+              <span className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">Complexity Score</span>
               <span className={`text-[8.5px] font-bold px-2 py-0.5 rounded border ${complexity.color}`}>
                 {complexity.text.split(" ")[0]}
               </span>
             </div>
             <div className="space-y-1.5">
               <div className="flex items-end justify-between">
-                <span className="text-xl font-black text-slate-100">{complexityScore}%</span>
+                <span className="text-xl font-black text-slate-900">{complexityScore}%</span>
               </div>
-              <div className="w-full bg-slate-850 h-1.5 rounded-full overflow-hidden p-px">
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full" style={{ width: `${complexityScore}%` }} />
+              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden p-px">
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full" style={{ width: `${complexityScore}%` }} />
               </div>
             </div>
           </motion.div>
@@ -214,12 +214,12 @@ export default function Dashboard({ proposal, onReset }) {
         </div>
 
         {/* Tab Navigation Menu */}
-        <div className="flex flex-wrap gap-1 bg-slate-900/50 border border-slate-900 rounded-2xl p-1.5 w-fit">
+        <div className="flex flex-wrap gap-1 bg-white border border-slate-200 rounded-2xl p-1.5 w-fit shadow-xs">
           {navItems.map(item => (
             <button 
               key={item.id} 
               onClick={() => setActiveSection(item.id)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeSection === item.id ? "bg-indigo-650 text-white shadow" : "text-slate-450 hover:text-slate-200"}`}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeSection === item.id ? "bg-emerald-600 text-white shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
             >
               {item.label}
             </button>
@@ -233,86 +233,77 @@ export default function Dashboard({ proposal, onReset }) {
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
-            {/* Left Col: Project Summary & APIs */}
+            {/* Left Col: Executive Summary & Features */}
             <div className="lg:col-span-2 space-y-6">
               
               {/* Executive Summary Card */}
-              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4">
-                <h3 className="font-extrabold text-base text-slate-250 border-b border-slate-900 pb-3 flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-indigo-400" />
+              <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+                <h3 className="font-extrabold text-base text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-emerald-600" />
                   Executive Summary & Scope Description
                 </h3>
-                <p className="text-slate-350 text-xs leading-relaxed">{ai_response.summary}</p>
-                <div className="bg-slate-950/40 border border-slate-900 p-4.5 rounded-2xl space-y-2">
+                <p className="text-slate-700 text-xs leading-relaxed">{ai_response.summary}</p>
+                <div className="bg-slate-50 border border-slate-200 p-4.5 rounded-2xl space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Brief Objectives Statement</span>
-                  <p className="text-slate-400 text-xs leading-normal">
-                    Develop a robust core matching the {industry} sector standards. Mapped to client-selected specifications, our technical team recomends deploying containerized configurations on AWS VPC infrastructure, maintaining database integrations, and scaling in modular sprint cycles.
+                  <p className="text-slate-600 text-xs leading-normal">
+                    Develop a robust core matching the {industry} sector standards. Mapped to client-selected specifications, our technical team recommends deploying containerized configurations on AWS VPC infrastructure, maintaining database integrations, and scaling in modular sprint cycles.
                   </p>
                 </div>
               </div>
 
               {/* Dynamic Effort Chart & Features list */}
-              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                {/* Effort Distribution Bar/Pie SVG Chart */}
+                {/* Effort Hour Distribution SVG Chart */}
                 <div className="space-y-4 text-left">
-                  <h4 className="font-extrabold text-sm text-slate-200">Effort Hour Distribution</h4>
+                  <h4 className="font-extrabold text-sm text-slate-900">Effort Hour Distribution</h4>
                   
-                  {/* SVG Chart ring gauge */}
                   <div className="flex items-center space-x-6">
                     <div className="relative w-28 h-28 flex items-center justify-center">
                       <svg width="100%" height="100%" viewBox="0 0 42 42" className="transform -rotate-90">
-                        {/* Circle background */}
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#1e293b" strokeWidth="3" />
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#f1f5f9" strokeWidth="3" />
                         
-                        {/* Ring segments: Design (15%), Frontend (35%), Backend (30%), QA (12%), PM (8%) */}
-                        {/* Design */}
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#4f46e5" strokeWidth="4" strokeDasharray="15 85" strokeDashoffset="0" />
-                        {/* Frontend */}
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#7c3aed" strokeWidth="4" strokeDasharray="35 65" strokeDashoffset="-15" />
-                        {/* Backend */}
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#ec4899" strokeWidth="4" strokeDasharray="30 70" strokeDashoffset="-50" />
-                        {/* QA */}
-                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#10b981" strokeWidth="4" strokeDasharray="12 88" strokeDashoffset="-80" />
-                        {/* PM */}
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#10b981" strokeWidth="4" strokeDasharray="35 65" strokeDashoffset="0" />
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#0d9488" strokeWidth="4" strokeDasharray="30 70" strokeDashoffset="-35" />
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#059669" strokeWidth="4" strokeDasharray="15 85" strokeDashoffset="-65" />
+                        <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#34d399" strokeWidth="4" strokeDasharray="12 88" strokeDashoffset="-80" />
                         <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#f59e0b" strokeWidth="4" strokeDasharray="8 92" strokeDashoffset="-92" />
                       </svg>
                       <div className="absolute flex flex-col items-center justify-center">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 font-mono">Rate</span>
-                        <span className="text-xs font-black text-slate-200 font-mono">$100/h</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 font-mono">Rate</span>
+                        <span className="text-xs font-black text-slate-900 font-mono">$100/h</span>
                       </div>
                     </div>
 
-                    {/* Chart Legends */}
                     <div className="space-y-1.5 flex-1">
                       {[
-                        { name: "Frontend", color: "bg-purple-500", pct: "35%" },
-                        { name: "Backend", color: "bg-pink-500", pct: "30%" },
-                        { name: "UI/UX Design", color: "bg-indigo-500", pct: "15%" },
-                        { name: "Quality Assurance", color: "bg-emerald-500", pct: "12%" },
+                        { name: "Frontend", color: "bg-emerald-500", pct: "35%" },
+                        { name: "Backend", color: "bg-teal-600", pct: "30%" },
+                        { name: "UI/UX Design", color: "bg-emerald-700", pct: "15%" },
+                        { name: "Quality Assurance", color: "bg-emerald-300", pct: "12%" },
                         { name: "Project Management", color: "bg-amber-500", pct: "8%" },
                       ].map((lg, idx) => (
                         <div key={idx} className="flex items-center justify-between text-[10px]">
                           <div className="flex items-center space-x-1.5">
                             <span className={`w-2 h-2 rounded-sm ${lg.color}`} />
-                            <span className="text-slate-400">{lg.name}</span>
+                            <span className="text-slate-600">{lg.name}</span>
                           </div>
-                          <span className="font-bold text-slate-200">{lg.pct}</span>
+                          <span className="font-bold text-slate-900">{lg.pct}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Scope features list */}
+                {/* Scope modules */}
                 <div className="space-y-3">
-                  <h4 className="font-extrabold text-sm text-slate-200">Core Scope Modules</h4>
+                  <h4 className="font-extrabold text-sm text-slate-900">Core Scope Modules</h4>
                   <div className="grid grid-cols-1 gap-2 max-h-[160px] overflow-y-auto pr-1">
                     {features.map((f) => {
-                      const meta = FEATURE_META[f.toLowerCase()] || { name: f.replace(/_/g, " ").title(), desc: "Custom business scope integration." };
+                      const meta = FEATURE_META[f.toLowerCase()] || { name: f.replace(/_/g, " ").toUpperCase(), desc: "Custom business scope integration." };
                       return (
-                        <div key={f} className="p-2.5 bg-slate-950/40 border border-slate-900 rounded-xl">
-                          <h5 className="text-[10.5px] font-bold text-slate-350 capitalize">{meta.name}</h5>
+                        <div key={f} className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                          <h5 className="text-[10.5px] font-bold text-slate-800 capitalize">{meta.name}</h5>
                         </div>
                       );
                     })}
@@ -323,35 +314,33 @@ export default function Dashboard({ proposal, onReset }) {
 
             </div>
 
-            {/* Right Col: APIs & Recommendations */}
+            {/* Right Col: APIs & Architect Notes */}
             <div className="lg:col-span-1 space-y-6">
               
-              {/* Dynamic APIs */}
-              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4">
-                <h4 className="font-extrabold text-sm text-slate-200 flex items-center gap-1.5">
-                  <Zap className="w-4.5 h-4.5 text-indigo-400" />
+              <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+                <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+                  <Zap className="w-4.5 h-4.5 text-emerald-600" />
                   Recommended APIs
                 </h4>
                 <div className="space-y-3">
                   {recommendApis.map((api, idx) => (
-                    <div key={idx} className="p-3 bg-slate-950/40 border border-slate-900 rounded-xl space-y-1">
-                      <h5 className="text-xs font-bold text-slate-250 flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" />
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                      <h5 className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                         {api.name}
                       </h5>
-                      <p className="text-[10px] text-slate-400 leading-normal">{api.desc}</p>
+                      <p className="text-[10px] text-slate-600 leading-normal">{api.desc}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* AI Features values check */}
-              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-3.5">
-                <h4 className="font-extrabold text-sm text-slate-200 flex items-center gap-1.5">
-                  <Cpu className="w-4.5 h-4.5 text-purple-400" />
+              <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-3.5">
+                <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+                  <Cpu className="w-4.5 h-4.5 text-teal-600" />
                   AI Architect Guidelines
                 </h4>
-                <p className="text-[10.5px] text-slate-400 leading-relaxed">
+                <p className="text-[10.5px] text-slate-600 leading-relaxed">
                   Compliance validation and integrations have been mapped dynamically to evaluate technical dependencies. Staging runs can execute SQLite schemas locally before production postgres migration runs.
                 </p>
               </div>
@@ -368,39 +357,37 @@ export default function Dashboard({ proposal, onReset }) {
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             
-            {/* Architectural visual flowchart */}
-            <div className="lg:col-span-2 bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm text-center space-y-8">
+            {/* High Contrast Flowchart Card (Dark Container on Light Canvas) */}
+            <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 p-8 rounded-3xl text-center space-y-8 text-zinc-100 shadow-xl">
               
               <div className="space-y-1.5 text-left">
-                <h3 className="font-extrabold text-base text-slate-200">System Flow Visualizer</h3>
-                <p className="text-slate-500 text-xs">Horizontal schema representing service layers and requests routing paths.</p>
+                <h3 className="font-extrabold text-base text-zinc-100">System Flow Visualizer</h3>
+                <p className="text-zinc-400 text-xs">Horizontal schema representing service layers and request routing paths.</p>
               </div>
 
-              {/* SVG-linked Architecture columns flow */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-stretch relative min-h-[220px]">
                 
-                {/* Visual connecting grid guides (hidden on small screen) */}
                 <div className="absolute inset-0 pointer-events-none opacity-30 hidden sm:block">
                   <svg width="100%" height="100%">
-                    <path d="M 120 110 L 210 110 M 310 110 L 400 110 M 500 110 L 590 110" stroke="#4f46e5" strokeWidth="2" strokeDasharray="4,4" fill="none" />
+                    <path d="M 120 110 L 210 110 M 310 110 L 400 110 M 500 110 L 590 110" stroke="#10b981" strokeWidth="2" strokeDasharray="4,4" fill="none" />
                   </svg>
                 </div>
 
                 {[
-                  { layer: "Presentation", title: "Client SPA", sub: "React + Vite SPA", icon: Globe, col: "border-indigo-500/20 bg-indigo-950/20 text-indigo-300" },
-                  { layer: "API Gateway", title: "FastAPI Backend", sub: "Python Async API", icon: Server, col: "border-purple-500/20 bg-purple-950/20 text-purple-300" },
-                  { layer: "Services Logic", title: "Rule Engine + AI", sub: "Analysis / Prompts", icon: Cpu, col: "border-pink-500/20 bg-pink-950/20 text-pink-300" },
-                  { layer: "Data Layer", title: "PostgreSQL DB", sub: "relational database", icon: Database, col: "border-emerald-500/20 bg-emerald-950/20 text-emerald-300" },
+                  { layer: "Presentation", title: "Client SPA", sub: "React + Vite SPA", icon: Globe, col: "border-emerald-500/30 bg-zinc-950 text-emerald-300" },
+                  { layer: "API Gateway", title: "FastAPI Backend", sub: "Python Async API", icon: Server, col: "border-teal-500/30 bg-zinc-950 text-teal-300" },
+                  { layer: "Services Logic", title: "Rule Engine + AI", sub: "Analysis / Prompts", icon: Cpu, col: "border-emerald-500/30 bg-zinc-950 text-emerald-300" },
+                  { layer: "Data Layer", title: "PostgreSQL DB", sub: "relational database", icon: Database, col: "border-green-500/30 bg-zinc-950 text-green-300" },
                 ].map((node, i) => (
                   <div 
                     key={i}
-                    className={`p-5 rounded-2xl border backdrop-blur flex flex-col justify-between items-center text-center shadow shadow-slate-950/40 relative z-10 ${node.col}`}
+                    className={`p-5 rounded-2xl border flex flex-col justify-between items-center text-center shadow-md relative z-10 ${node.col}`}
                   >
-                    <span className="text-[9px] uppercase font-bold tracking-widest opacity-60 font-mono mb-2">{node.layer}</span>
-                    <node.icon className="w-6 h-6 my-2 opacity-80" />
+                    <span className="text-[9px] uppercase font-bold tracking-widest opacity-70 font-mono mb-2">{node.layer}</span>
+                    <node.icon className="w-6 h-6 my-2 opacity-90 text-emerald-400" />
                     <div className="space-y-0.5">
-                      <h4 className="font-extrabold text-xs text-slate-100">{node.title}</h4>
-                      <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{node.sub}</p>
+                      <h4 className="font-extrabold text-xs text-zinc-100">{node.title}</h4>
+                      <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">{node.sub}</p>
                     </div>
                   </div>
                 ))}
@@ -411,13 +398,13 @@ export default function Dashboard({ proposal, onReset }) {
 
             {/* Architecture Stack lists */}
             <div className="lg:col-span-1 space-y-6">
-              <div className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4">
-                <h3 className="font-extrabold text-sm text-slate-200">Recommended Tech Stack</h3>
+              <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+                <h3 className="font-extrabold text-sm text-slate-900">Recommended Tech Stack</h3>
                 <div className="space-y-3">
                   {Object.entries(ai_response.tech_stack).map(([layer, rec]) => (
-                    <div key={layer} className="space-y-1 bg-slate-950/30 border border-slate-900 p-3 rounded-xl">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-indigo-400 font-mono">{layer}</span>
-                      <p className="text-xs text-slate-300 leading-normal font-semibold">{rec}</p>
+                    <div key={layer} className="space-y-1 bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-700 font-mono">{layer}</span>
+                      <p className="text-xs text-slate-800 leading-normal font-semibold">{rec}</p>
                     </div>
                   ))}
                 </div>
@@ -435,43 +422,38 @@ export default function Dashboard({ proposal, onReset }) {
             className="max-w-4xl mx-auto space-y-8"
           >
             
-            <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm">
+            <div className="bg-white border border-slate-200 p-8 rounded-3xl shadow-sm">
               <div className="space-y-1.5 text-left mb-8">
-                <h3 className="font-extrabold text-base text-slate-200">Implementation Timeline Roadmap</h3>
+                <h3 className="font-extrabold text-base text-slate-900">Implementation Timeline Roadmap</h3>
                 <p className="text-slate-500 text-xs">Standard three-phase visual scope mapping estimated duration benchmarks.</p>
               </div>
 
-              {/* Vertical timeline map */}
               <div className="relative pl-6">
-                
-                {/* Vertical visual bar */}
-                <div className="absolute left-6.5 top-6 bottom-6 w-px bg-gradient-to-b from-indigo-500/60 via-purple-500/20 to-transparent" />
+                <div className="absolute left-6.5 top-6 bottom-6 w-px bg-gradient-to-b from-emerald-500 via-teal-400 to-transparent" />
                 
                 <div className="space-y-6">
                   {ai_response.roadmap.map((phase, idx) => (
                     <div key={idx} className="flex gap-6 relative pl-3">
                       
-                      {/* Node number */}
-                      <div className="absolute left-[-20px] top-1 w-6 h-6 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-650 flex items-center justify-center text-white text-[10px] font-black z-10 shadow-md">
+                      <div className="absolute left-[-20px] top-1 w-6 h-6 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white text-[10px] font-black z-10 shadow-sm">
                         {idx + 1}
                       </div>
 
-                      {/* Phase details card */}
-                      <div className="flex-1 bg-slate-950/40 border border-slate-900 hover:border-slate-800 p-5 rounded-2xl transition-all">
+                      <div className="flex-1 bg-slate-50 border border-slate-200 hover:border-slate-300 p-5 rounded-2xl transition-all">
                         <div className="flex items-start justify-between gap-4 flex-wrap">
                           <div className="space-y-3">
-                            <h4 className="font-extrabold text-sm text-slate-200">{phase.title}</h4>
+                            <h4 className="font-extrabold text-sm text-slate-900">{phase.title}</h4>
                             <div className="space-y-1.5">
                               {phase.features.map((f, fi) => (
-                                <div key={fi} className="flex items-center gap-2 text-xs text-slate-400">
-                                  <CheckSquare className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                                <div key={fi} className="flex items-center gap-2 text-xs text-slate-700">
+                                  <CheckSquare className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                                   <span>{f}</span>
                                 </div>
                               ))}
                             </div>
                           </div>
                           
-                          <span className="text-[10px] font-bold bg-indigo-950/50 border border-indigo-500/30 text-indigo-300 px-3 py-1 rounded-full whitespace-nowrap">
+                          <span className="text-[10px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1 rounded-full whitespace-nowrap">
                             ⏱ &nbsp; {phase.duration}
                           </span>
                         </div>
@@ -497,8 +479,8 @@ export default function Dashboard({ proposal, onReset }) {
           >
             
             <div className="space-y-1">
-              <h3 className="font-extrabold text-lg text-slate-250">Agile Sprint Planner</h3>
-              <p className="text-slate-500 text-xs">Standard developer capacity allocation sprint sprints logs.</p>
+              <h3 className="font-extrabold text-lg text-slate-900">Agile Sprint Planner</h3>
+              <p className="text-slate-500 text-xs">Standard developer capacity allocation sprint logs.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -510,39 +492,38 @@ export default function Dashboard({ proposal, onReset }) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
-                    className="bg-slate-900/30 border border-slate-900 p-6 rounded-3xl backdrop-blur-sm space-y-4 text-left flex flex-col justify-between"
+                    className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4 text-left flex flex-col justify-between"
                   >
                     <div className="space-y-3.5">
                       
-                      <div className="flex items-center justify-between border-b border-slate-950 pb-3">
-                        <span className="font-extrabold text-sm text-slate-200">{sprint.title}</span>
-                        <span className="text-[9px] font-bold text-indigo-300 bg-indigo-950/40 border border-indigo-500/20 px-2 py-0.5 rounded-full font-mono">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <span className="font-extrabold text-sm text-slate-900">{sprint.title}</span>
+                        <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-mono">
                           {sprint.effort}
                         </span>
                       </div>
 
-                      {/* Progress Bar */}
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 uppercase">
                           <span>Sprint Status</span>
                           <span>{progress}% Complete</span>
                         </div>
-                        <div className="w-full bg-slate-950 border border-slate-900 h-2 rounded-full overflow-hidden p-0.5">
-                          <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all" style={{ width: `${progress}%` }} />
+                        <div className="w-full bg-slate-100 border border-slate-200 h-2 rounded-full overflow-hidden p-0.5">
+                          <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all" style={{ width: `${progress}%` }} />
                         </div>
                       </div>
 
-                      <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
+                      <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
                         {sprint.objectives}
                       </p>
 
                     </div>
 
-                    <div className="space-y-2 pt-4 border-t border-slate-950">
+                    <div className="space-y-2 pt-4 border-t border-slate-100">
                       <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500">Deliverables</span>
                       {sprint.deliverables.map((del, dIdx) => (
-                        <div key={dIdx} className="flex items-start gap-1.5 text-[11px] text-slate-450 leading-normal">
-                          <Circle className="w-1.5 h-1.5 text-indigo-400 mt-1.5 flex-shrink-0" />
+                        <div key={dIdx} className="flex items-start gap-1.5 text-[11px] text-slate-700 leading-normal">
+                          <Circle className="w-1.5 h-1.5 text-emerald-600 mt-1.5 flex-shrink-0" />
                           <span>{del}</span>
                         </div>
                       ))}
@@ -564,46 +545,44 @@ export default function Dashboard({ proposal, onReset }) {
             className="max-w-4xl mx-auto space-y-6"
           >
             
-            <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm space-y-6">
+            <div className="bg-white border border-slate-200 p-8 rounded-3xl shadow-sm space-y-6">
               
               <div className="space-y-1">
-                <h3 className="font-extrabold text-base text-slate-200">Budget Breakdown</h3>
+                <h3 className="font-extrabold text-base text-slate-900">Budget Breakdown</h3>
                 <p className="text-slate-500 text-xs">Cost allocation distribution computed across software engineering phases.</p>
               </div>
 
-              {/* Budget Table */}
               <div className="space-y-3">
                 {[
-                  { name: "UI/UX Design Phase", desc: "User wireframes, asset vectors, high-fidelity responsive mockups", cost: breakdown.design, pct: 15, barColor: "bg-indigo-500" },
-                  { name: "Frontend Development", desc: "Responsive Client interface codes, custom dashboard flow", cost: breakdown.frontend, pct: 35, barColor: "bg-purple-500" },
-                  { name: "Backend Engineering", desc: "FastAPI controllers, database schemas, integrations mapping", cost: breakdown.backend, pct: 30, barColor: "bg-pink-500" },
-                  { name: "Quality Assurance", desc: "System responsiveness checks, unit integration test suites logs", cost: breakdown.qa, pct: 12, barColor: "bg-emerald-500" },
+                  { name: "UI/UX Design Phase", desc: "User wireframes, asset vectors, high-fidelity responsive mockups", cost: breakdown.design, pct: 15, barColor: "bg-emerald-600" },
+                  { name: "Frontend Development", desc: "Responsive Client interface codes, custom dashboard flow", cost: breakdown.frontend, pct: 35, barColor: "bg-emerald-500" },
+                  { name: "Backend Engineering", desc: "FastAPI controllers, database schemas, integrations mapping", cost: breakdown.backend, pct: 30, barColor: "bg-teal-600" },
+                  { name: "Quality Assurance", desc: "System responsiveness checks, unit integration test suites logs", cost: breakdown.qa, pct: 12, barColor: "bg-emerald-400" },
                   { name: "Project Management", desc: "Agile sprints checklists updates, solution review reporting", cost: breakdown.pm, pct: 8, barColor: "bg-amber-500" }
                 ].map((row, i) => (
-                  <div key={i} className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1.5 flex-1 pr-6">
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs font-bold text-slate-200">{row.name}</span>
+                        <span className="text-xs font-bold text-slate-900">{row.name}</span>
                         <span className="text-[8.5px] font-mono text-slate-500">({row.pct}%)</span>
                       </div>
-                      <p className="text-[10px] text-slate-450 leading-none">{row.desc}</p>
-                      <div className="w-full bg-slate-900 border border-slate-950 h-1.5 rounded-full overflow-hidden">
+                      <p className="text-[10px] text-slate-600 leading-none">{row.desc}</p>
+                      <div className="w-full bg-slate-200 border border-slate-300 h-1.5 rounded-full overflow-hidden">
                         <div className={`h-full ${row.barColor} rounded-full`} style={{ width: `${row.pct}%` }} />
                       </div>
                     </div>
-                    <span className="text-xs font-black text-slate-100 font-mono sm:text-right whitespace-nowrap min-w-[100px]">
+                    <span className="text-xs font-black text-slate-900 font-mono sm:text-right whitespace-nowrap min-w-[100px]">
                       ${row.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 ))}
 
-                {/* Total cost final row */}
-                <div className="p-5 bg-indigo-950/25 border border-indigo-900/50 rounded-2xl flex items-center justify-between">
+                <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between">
                   <div>
-                    <h4 className="font-extrabold text-xs text-indigo-300">TOTAL ESTIMATED BUDGET</h4>
-                    <p className="text-[9.5px] text-slate-450 mt-0.5">Computed dynamic proposal pricing, excluding third-party API server hosting expenditures</p>
+                    <h4 className="font-extrabold text-xs text-emerald-900">TOTAL ESTIMATED BUDGET</h4>
+                    <p className="text-[9.5px] text-slate-600 mt-0.5">Computed dynamic proposal pricing, excluding third-party API server hosting expenditures</p>
                   </div>
-                  <span className="text-base font-black text-indigo-400 font-mono">
+                  <span className="text-base font-black text-emerald-700 font-mono">
                     ${estimate.cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -620,11 +599,11 @@ export default function Dashboard({ proposal, onReset }) {
           initial={{ opacity: 0 }} 
           whileInView={{ opacity: 1 }} 
           viewport={{ once: true }}
-          className="bg-slate-900/30 border border-slate-900 p-8 rounded-3xl backdrop-blur-sm space-y-5"
+          className="bg-white border border-slate-200 p-8 rounded-3xl shadow-sm space-y-5"
         >
           <div className="space-y-1">
-            <h3 className="font-extrabold text-base text-slate-200 flex items-center gap-1.5">
-              <AlertTriangle className="w-5 h-5 text-red-400" />
+            <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-1.5">
+              <AlertTriangle className="w-5 h-5 text-amber-600" />
               Technical Risk Mitigation Policy
             </h3>
             <p className="text-slate-500 text-xs">Identified risk factors and recommended engineering mitigation policies.</p>
@@ -632,14 +611,14 @@ export default function Dashboard({ proposal, onReset }) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {ai_response.risks.map((risk, idx) => (
-              <div key={idx} className="p-4 bg-slate-950/40 border border-slate-900 rounded-2xl space-y-2">
-                <span className="text-[9px] uppercase font-bold bg-red-950/30 border border-red-500/20 text-red-450 px-2 py-0.5 rounded-full inline-block font-mono">
+              <div key={idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                <span className="text-[9px] uppercase font-bold bg-amber-100 border border-amber-300 text-amber-800 px-2 py-0.5 rounded-full inline-block font-mono">
                   Risk Factor {idx + 1}
                 </span>
-                <h4 className="font-extrabold text-xs text-slate-250 leading-relaxed">{risk.risk}</h4>
-                <div className="p-3 bg-slate-900/30 border border-slate-900/60 rounded-xl">
-                  <span className="text-[8.5px] font-bold text-indigo-300 uppercase tracking-widest block mb-1">Mitigation Plan</span>
-                  <p className="text-[10px] text-slate-400 leading-relaxed">{risk.mitigation}</p>
+                <h4 className="font-extrabold text-xs text-slate-900 leading-relaxed">{risk.risk}</h4>
+                <div className="p-3 bg-white border border-slate-200 rounded-xl">
+                  <span className="text-[8.5px] font-bold text-emerald-700 uppercase tracking-widest block mb-1">Mitigation Plan</span>
+                  <p className="text-[10px] text-slate-600 leading-relaxed">{risk.mitigation}</p>
                 </div>
               </div>
             ))}
