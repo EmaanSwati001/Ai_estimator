@@ -123,7 +123,7 @@ export default function LandingPage({ onStart, onAdminClick }) {
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-20 pb-24 md:pt-32 md:pb-20 w-full z-10">
+      <section className="max-w-7xl mx-auto px-6 pb-2 pt-32 w-full z-10">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
@@ -208,9 +208,14 @@ export default function LandingPage({ onStart, onAdminClick }) {
 
               {/* Floating visual block */}
               <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-                className="bg-zinc-950/90 border border-[#FF6201]/30 p-4 rounded-xl z-10 shadow-xl text-left backdrop-blur-md"
+                animate={{ y: -6 }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  ease: "easeInOut",
+                }}
+                className="bg-zinc-950/90 border will-change-transform border-[#FF6201]/30 p-4 rounded-xl z-10 shadow-xl text-left backdrop-blur-md"
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <Sparkles className="w-4 h-4 text-[#FF6201]" />
@@ -274,7 +279,7 @@ export default function LandingPage({ onStart, onAdminClick }) {
       </section>
 
       {/* Features Grid */}
-      <section className="max-w-7xl mx-auto px-6 py-24 w-full z-10">
+      <section className="max-w-7xl mx-auto px-6 pt-15 pb-24 w-full z-10">
 
         <div className="text-center mb-16">
           <span className="text-xs font-semibold text-[#FF6201] tracking-wider uppercase px-2.5 py-1 rounded-full bg-[#FF6201]/10 border border-[#FF6201]/20">
@@ -290,25 +295,22 @@ export default function LandingPage({ onStart, onAdminClick }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           {/* Discovery */}
-          <div className="lg:col-span-2 bg-[#111111] border border-white/10 rounded-3xl p-6 sm:p-8 text-left hover:border-[#FF6201]/30 transition-all duration-300">
+          <div className="lg:col-span-2 rounded-3xl border border-white/10 bg-[#111111] p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:border-[#FF6201]/30">
 
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 
-              {/* Top Left Icon */}
-              <div className="w-11 h-11 shrink-0 rounded-2xl bg-[#FF6201]/10 border border-[#FF6201]/20 flex items-center justify-center text-[#FF6201]">
-                <MessageSquare className="w-5 h-5" />
+              <div className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#FF6201]/20 bg-[#FF6201]/10 text-[#FF6201]">
+                <MessageSquare className="h-5 w-5" />
               </div>
 
-
-              {/* Top Right Tags */}
-              <div className="flex flex-wrap justify-end gap-2">
-                {["Web", "Mobile", "SaaS", "Enterprise"].map(item => (
+              <div className="flex flex-wrap gap-2 sm:justify-end">
+                {["Web", "Mobile", "SaaS", "Enterprise"].map((item) => (
                   <span
                     key={item}
-                    className="px-3 py-1.5 rounded-xl text-xs bg-white/5 border border-white/10 text-zinc-300"
+                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-zinc-300 sm:text-xs"
                   >
                     {item}
                   </span>
@@ -317,109 +319,94 @@ export default function LandingPage({ onStart, onAdminClick }) {
 
             </div>
 
-            <h3 className="mt-6 text-xl font-bold text-white">
+            <h3 className="mt-5 text-lg font-bold text-white sm:text-xl">
               Guided Scoping Engine
             </h3>
 
-            <p className="mt-3 text-sm text-zinc-400 leading-relaxed max-w-2xl">
-              Collect project requirements through an intelligent guided workflow. Select platforms, industries, features, and technical requirements with a structured discovery process.
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+              Collect project requirements through an intelligent guided workflow.
+              Select platforms, industries, features, and technical requirements
+              with a structured discovery process.
             </p>
+
           </div>
 
-          {/* Calculation */}
-          <div className="bg-[#111111] border border-white/10 rounded-3xl p-6 text-left hover:border-[#FF6201]/30 transition-all">
+          {/* Cost Engine */}
+          <div className="rounded-3xl border border-white/10 bg-[#111111] p-5 sm:p-6 transition-all duration-300 hover:border-[#FF6201]/30">
 
-            <div className="w-11 h-11 rounded-2xl bg-[#FF6201]/10 border border-[#FF6201]/20 flex items-center justify-center text-[#FF6201]">
-              <DollarSign className="w-5 h-5" />
+            <div className="hidden h-11 w-11 items-center justify-center rounded-2xl border border-[#FF6201]/20 bg-[#FF6201]/10 text-[#FF6201] sm:flex">
+              <DollarSign className="h-5 w-5" />
             </div>
 
-
-            <h3 className="mt-6 font-bold text-white text-lg">
+            <h3 className="mt-0 text-lg font-bold text-white sm:mt-6">
               Rule-Based Cost Engine
             </h3>
 
-
-            <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
-              Calculate development hours, pricing, and timelines using structured rules instead of unreliable guesses.
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              Calculate development hours, pricing, and timelines using structured
+              rules instead of unreliable guesses.
             </p>
 
           </div>
 
-          {/* AI Recommendation */}
-          <div className="bg-[#111111] border border-white/10 rounded-3xl p-6 text-left hover:border-[#FF6201]/30 transition-all">
+          {/* AI Insights */}
+          <div className="rounded-3xl border border-white/10 bg-[#111111] p-5 sm:p-6 transition-all duration-300 hover:border-[#FF6201]/30">
 
-            <div className="w-11 h-11 rounded-2xl bg-[#FF6201]/10 border border-[#FF6201]/20 flex items-center justify-center text-[#FF6201]">
-              <Sparkles className="w-5 h-5" />
+            <div className="hidden h-11 w-11 items-center justify-center rounded-2xl border border-[#FF6201]/20 bg-[#FF6201]/10 text-[#FF6201] sm:flex">
+              <Sparkles className="h-5 w-5" />
             </div>
 
-
-            <h3 className="mt-6 font-bold text-white text-lg">
+            <h3 className="mt-0 text-lg font-bold text-white sm:mt-6">
               AI Project Insights
             </h3>
 
-
-            <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
-              Get intelligent recommendations based on industry, features, complexity, and technical requirements.
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              Get intelligent recommendations based on industry, features,
+              complexity, and technical requirements.
             </p>
 
           </div>
 
           {/* Proposal */}
-          <div className="lg:col-span-2 bg-gradient-to-br from-[#151515] to-[#0d0d0d] border border-white/10 rounded-3xl p-6 sm:p-8 text-left hover:border-[#FF6201]/30 transition-all">
+          <div className="lg:col-span-2 rounded-3xl border border-white/10 bg-gradient-to-br from-[#151515] to-[#0d0d0d] p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:border-[#FF6201]/30">
 
-
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
               <div>
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-lg font-bold text-white sm:text-xl">
                   Professional Proposal Generator
                 </h3>
 
-                <p className="mt-2 text-sm text-zinc-400 max-w-md">
-                  Convert estimates into client-ready PDF proposals with scope, roadmap, architecture, milestones, and risks.
+                <p className="mt-2 max-w-md text-sm leading-relaxed text-zinc-400">
+                  Convert estimates into client-ready PDF proposals with scope,
+                  roadmap, architecture, milestones, and risks.
                 </p>
               </div>
 
-
-              <div className="w-12 h-12 shrink-0 rounded-2xl bg-[#FF6201] flex items-center justify-center">
-                <FileText className="w-6 h-6 text-black" />
-              </div>
-
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-8">
-
-              <div className="rounded-xl bg-white/5 border border-white/10 p-4">
-                <p className="text-xs text-zinc-500">
-                  Timeline
-                </p>
-                <p className="mt-1 font-bold text-white">
-                  Auto Generated
-                </p>
-              </div>
-
-
-              <div className="rounded-xl bg-white/5 border border-white/10 p-4">
-                <p className="text-xs text-zinc-500">
-                  Document
-                </p>
-                <p className="mt-1 font-bold text-white">
-                  PDF Export
-                </p>
-              </div>
-
-
-              <div className="rounded-xl bg-white/5 border border-white/10 p-4">
-                <p className="text-xs text-zinc-500">
-                  Planning
-                </p>
-                <p className="mt-1 font-bold text-[#FF6201]">
-                  Sprint Ready
-                </p>
+              <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF6201] md:flex">
+                <FileText className="h-6 w-6 text-black" />
               </div>
 
             </div>
 
+            <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs text-zinc-500">Timeline</p>
+                <p className="mt-1 font-bold text-white">Auto Generated</p>
+              </div>
+
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs text-zinc-500">Document</p>
+                <p className="mt-1 font-bold text-white">PDF Export</p>
+              </div>
+
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <p className="text-xs text-zinc-500">Planning</p>
+                <p className="mt-1 font-bold text-[#FF6201]">Sprint Ready</p>
+              </div>
+
+            </div>
 
           </div>
 
@@ -500,9 +487,8 @@ export default function LandingPage({ onStart, onAdminClick }) {
       </section>
 
       {/* Testimonials */}
-      <section className="border-t border-b border-white/8 bg-zinc-950/30 py-24 w-full overflow-hidden">
+      <section className="border-t border-b border-white/10 bg-zinc-950/30 py-24 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
-
           <div className="text-center mb-16">
             <span className="text-xs font-semibold text-[#FF6201] tracking-wider uppercase px-2.5 py-1 rounded-full bg-[#FF6201]/10 border border-[#FF6201]/20">
               Social Proof
@@ -512,97 +498,56 @@ export default function LandingPage({ onStart, onAdminClick }) {
               What Product Teams Say
             </h2>
           </div>
+        </div>
 
-
-          {[
-            {
-              text: "ProjectPilot AI transformed our discovery process. What used to take days now takes minutes with accurate estimates and professional proposals.",
-              author: "Sarah Jenkins",
-              role: "VP of Product, DevLab"
-            },
-            {
-              text: "The estimation workflow is simple and powerful. Our team understands scope, timeline, and budget before development starts.",
-              author: "Alex Rivera",
-              role: "Founder, Zenith SaaS"
-            },
-            {
-              text: "The generated proposals look enterprise-ready with architecture, risks, milestones, and technical planning.",
-              author: "David Vance",
-              role: "Delivery Director, CloudEngine"
-            },
-            {
-              text: "We reduced proposal preparation time by more than 80%. The AI recommendations improve every discovery call.",
-              author: "Emily Carter",
-              role: "Product Manager, NovaLabs"
-            },
-            {
-              text: "Our developers spend less time estimating and more time building. Planning is now much more consistent.",
-              author: "Daniel Brooks",
-              role: "Engineering Manager"
-            },
-            {
-              text: "The platform gives our enterprise clients confidence with clear roadmaps and realistic expectations.",
-              author: "Olivia Parker",
-              role: "Project Director"
-            }
-          ].map((_, i) => null)}
-
-
-          {/* Top Row */}
-          <div className="relative flex overflow-hidden mb-6">
-            <div className="flex gap-6 animate-marquee">
-
-              {[...Array(2)].flatMap(() => [
-                {
-                  text: "ProjectPilot AI transformed our discovery process. What used to take days now takes minutes with accurate estimates.",
-                  author: "Sarah Jenkins",
-                  role: "VP of Product, DevLab"
-                },
-                {
-                  text: "The estimation workflow is simple and powerful. Our team understands scope and budget faster.",
-                  author: "Alex Rivera",
-                  role: "Founder, Zenith SaaS"
-                },
-                {
-                  text: "The generated proposals look enterprise-ready with architecture, risks, and milestones.",
-                  author: "David Vance",
-                  role: "Delivery Director, CloudEngine"
-                }
-              ]).map((t, i) => (
-                <TestimonialCard key={i} {...t} />
-              ))}
-
-            </div>
+        {/* Top Row */}
+        <div className="relative overflow-hidden mb-6 max-w-7xl mx-auto">
+          <div className="animate-marquee">
+            {[...Array(4)].flatMap(() => [
+              {
+                text: "ProjectPilot AI transformed our discovery process. What used to take days now takes minutes with accurate estimates.",
+                author: "Sarah Jenkins",
+                role: "VP of Product, DevLab",
+              },
+              {
+                text: "The estimation workflow is simple and powerful. Our team understands scope and budget faster.",
+                author: "Alex Rivera",
+                role: "Founder, Zenith SaaS",
+              },
+              {
+                text: "The generated proposals look enterprise-ready with architecture, risks, and milestones.",
+                author: "David Vance",
+                role: "Delivery Director, CloudEngine",
+              },
+            ]).map((t, i) => (
+              <TestimonialCard key={i} {...t} />
+            ))}
           </div>
+        </div>
 
-
-          {/* Bottom Row */}
-          <div className="relative flex overflow-hidden">
-            <div className="flex gap-6 animate-marquee-reverse">
-
-              {[...Array(2)].flatMap(() => [
-                {
-                  text: "We reduced proposal preparation time by more than 80% with AI-assisted planning.",
-                  author: "Emily Carter",
-                  role: "Product Manager, NovaLabs"
-                },
-                {
-                  text: "Our developers spend less time estimating and more time building.",
-                  author: "Daniel Brooks",
-                  role: "Engineering Manager"
-                },
-                {
-                  text: "The platform gives enterprise clients confidence with clear roadmaps.",
-                  author: "Olivia Parker",
-                  role: "Project Director"
-                }
-              ]).map((t, i) => (
-                <TestimonialCard key={i} {...t} />
-              ))}
-
-            </div>
+        {/* Bottom Row */}
+        <div className="relative overflow-hidden max-w-7xl mx-auto">
+          <div className="animate-marquee-reverse mb-1">
+            {[...Array(4)].flatMap(() => [
+              {
+                text: "We reduced proposal preparation time by more than 80% with AI-assisted planning.",
+                author: "Emily Carter",
+                role: "Product Manager, NovaLabs",
+              },
+              {
+                text: "Our developers spend less time estimating and more time building.",
+                author: "Daniel Brooks",
+                role: "Engineering Manager",
+              },
+              {
+                text: "The platform gives enterprise clients confidence with clear roadmaps.",
+                author: "Olivia Parker",
+                role: "Project Director",
+              },
+            ]).map((t, i) => (
+              <TestimonialCard key={i} {...t} />
+            ))}
           </div>
-
         </div>
       </section>
 
