@@ -40,72 +40,117 @@ export default function LoadingScreen({ onFinished, triggerFinished }) {
   }, [progress, triggerFinished, onFinished]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col items-center justify-center relative overflow-hidden selection:bg-emerald-500/30">
-      
-      {/* Background Gradients */}
-      <div className="absolute top-[20%] left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-500/10 blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-[20%] right-[20%] w-[40%] h-[40%] rounded-full bg-teal-500/10 blur-[130px] pointer-events-none" />
+    <div className="min-h-screen bg-black/90 text-white flex flex-col items-center justify-center relative overflow-hidden selection:bg-[#FF6201]/30">
+
+      {/* Background Glow */}
+      <div className="absolute top-[15%] left-[20%] w-[40%] h-[40%] rounded-full bg-[#FF6201]/10 blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[15%] right-[20%] w-[40%] h-[40%] rounded-full bg-[#FF6201]/5 blur-[140px] pointer-events-none" />
+
 
       <div className="max-w-md w-full px-6 space-y-8 z-10 text-center">
-        
+
+
         {/* Title */}
         <div className="space-y-2">
-          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
+
+          <h3 className="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-zinc-200 to-[#FF6201] bg-clip-text text-transparent">
             Scoping Application
           </h3>
-          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+
+          <p className="text-zinc-500 text-xs font-semibold uppercase tracking-[0.2em]">
             ProjectPilot Proposal Compiler
           </p>
+
         </div>
 
-        {/* Real-time Checklist - Sleek Dark Card on Light Canvas */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 text-left space-y-3.5 shadow-2xl backdrop-blur-sm text-zinc-100">
+
+
+        {/* Checklist */}
+        <div className="bg-[#111111]/90 border border-white/10 rounded-3xl p-6 text-left space-y-3.5 shadow-2xl shadow-black/50 backdrop-blur-xl">
+
           {LOADING_STEPS.map((step) => {
+
             const isCompleted = progress >= (step.minPct + 10);
             const isInProgress = progress >= step.minPct && progress < (step.minPct + 10);
-            
+
             return (
-              <motion.div 
+
+              <motion.div
                 key={step.id}
                 initial={{ opacity: 0.3 }}
-                animate={{ 
+                animate={{
                   opacity: isCompleted ? 1 : isInProgress ? 1 : 0.35,
                   x: isInProgress ? 4 : 0
                 }}
                 transition={{ duration: 0.3 }}
-                className="flex items-center space-x-3 text-xs"
+                className="flex items-center gap-3 text-xs"
               >
+
                 {isCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+
+                  <CheckCircle2 className="w-4 h-4 text-[#FF6201] flex-shrink-0" />
+
                 ) : isInProgress ? (
-                  <Loader2 className="w-4 h-4 text-emerald-400 animate-spin flex-shrink-0" />
+
+                  <Loader2 className="w-4 h-4 text-[#FF6201] animate-spin flex-shrink-0" />
+
                 ) : (
+
                   <Circle className="w-4 h-4 text-zinc-700 flex-shrink-0" />
+
                 )}
-                
-                <span className={`font-semibold transition-all ${isCompleted ? "text-zinc-400 line-through decoration-zinc-700" : isInProgress ? "text-emerald-300 font-bold" : "text-zinc-500"}`}>
+
+
+                <span
+                  className={`font-semibold transition-all ${
+                    isCompleted
+                      ? "text-zinc-500 line-through decoration-zinc-700"
+                      : isInProgress
+                      ? "text-[#FF6201] font-bold"
+                      : "text-zinc-600"
+                  }`}
+                >
                   {step.text}
                 </span>
+
+
               </motion.div>
+
             );
           })}
+
         </div>
 
-        {/* Progressive Loading Bar */}
+
+
+        {/* Progress Bar */}
         <div className="space-y-3 pt-2">
-          <div className="w-full bg-slate-200 border border-slate-300 h-3 rounded-full overflow-hidden p-0.5 shadow-inner">
+
+          <div className="w-full bg-white/10 border border-white/10 h-3 rounded-full overflow-hidden p-0.5 shadow-inner">
+
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 rounded-full transition-all duration-300"
+              className="h-full bg-gradient-to-r from-[#FF6201] via-[#ff8a3d] to-[#FF6201] rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
+
           </div>
-          <div className="flex justify-between text-[10px] text-slate-500 font-black uppercase tracking-wider px-1">
+
+
+          <div className="flex justify-between text-[10px] text-zinc-500 font-black uppercase tracking-wider px-1">
+
             <span>Compiling Data</span>
-            <span>{Math.round(progress)}% Complete</span>
+
+            <span className="text-[#FF6201]">
+              {Math.round(progress)}% Complete
+            </span>
+
           </div>
+
         </div>
 
+
       </div>
+
     </div>
   );
 }
